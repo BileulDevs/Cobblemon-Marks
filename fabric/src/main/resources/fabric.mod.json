@@ -1,0 +1,25 @@
+{
+  "schemaVersion": 1,
+  "id": "cobblemonmarks",
+  "version": "${version}",
+  "name": "Cobblemon Marks",
+  "description": "A Cobblemon addon to farm marks",
+  "authors": [
+    "Darcosse"
+  ],
+  "license": "MIT License",
+  "icon": "assets/example/icon.png",
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "dev.darcosse.fabric.cobblemonmarks.CobblemonMarksFabricMod"
+    ]
+  },
+  "mixins": [
+    "cobblemonmarks.mixins.json"
+  ],
+  "depends": {
+    "minecraft": "1.21.1",
+    "cobblemon": ">=1.7.1 <1.8.0"
+  }
+}
