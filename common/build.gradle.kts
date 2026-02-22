@@ -18,11 +18,7 @@ dependencies {
 
     implementation("com.google.code.gson:gson:2.10.1")
 
-    implementation(annotationProcessor("io.github.llamalad7:mixinextras-common:0.4.1")!!)
     compileOnly("org.spongepowered:mixin:0.8.5")
-    annotationProcessor("org.spongepowered:mixin:0.8.5")
-
-    implementation("com.google.code.gson:gson:2.10.1")
 
     testImplementation("org.junit.jupiter:junit-jupiter-api:${property("junit_version")}")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:${property("junit_version")}")

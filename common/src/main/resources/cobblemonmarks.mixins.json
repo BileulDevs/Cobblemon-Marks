@@ -3,9 +3,10 @@
   "minVersion": "0.8",
   "package": "dev.darcosse.common.cobblemonmarks.mixin",
   "compatibilityLevel": "JAVA_21",
-  "mixins": [
+  "client": [
+    "MixinMarksWidget",
+    "MixinScrollSlotRow"
   ],
-  "client": [],
   "injectors": {
     "defaultRequire": 1
   }

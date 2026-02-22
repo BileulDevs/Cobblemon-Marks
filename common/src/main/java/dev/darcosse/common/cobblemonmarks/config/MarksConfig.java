@@ -25,10 +25,11 @@ public class MarksConfig {
     private static final String SANDSTORM    = COBBLEMON + "mark_weather_sandstorm";
 
     // === Marks spéciales ===
-    private static final String FISHING      = COBBLEMON + "mark_fishing";
-    private static final String UNCOMMON     = COBBLEMON + "mark_uncommon";
-    private static final String RARE         = COBBLEMON + "mark_rare";
-    private static final String PARTNER      = COBBLEMON + "mark_partner";
+    private static final String FISHING              = COBBLEMON + "mark_fishing";
+    private static final String UNCOMMON             = COBBLEMON + "mark_uncommon";
+    private static final String RARE                 = COBBLEMON + "mark_rare";
+    private static final String PARTNER              = COBBLEMON + "mark_partner";
+    private static final String RIBBON_TRAINING      = COBBLEMON + "ribbon_training";
 
     // === Marks de personnalité ===
     private static final String ABSENT_MINDED = COBBLEMON + "mark_personality_absent-minded";
@@ -211,7 +212,7 @@ public class MarksConfig {
                     )
             ),
 
-            // Rare Mark (the Recluse) — Capturer 3 pokémon shiny en combat (très rare, 1 suffit)
+            // Rare Mark (the Recluse) — Capturer 1 pokémon shiny en combat (très rare, 1 suffit)
             new MarksCondition(RARE,
                     new Conditions(
                             new KillCondition(1, List.of(), List.of(), NBT_PREFIX + "rare_shiny_captures"),
@@ -219,12 +220,19 @@ public class MarksConfig {
                     )
             ),
 
-            // Partner Mark (the Reliable Partner) — 1000 kills
+            // Partner Mark (the Reliable Partner) — 500 kills
             new MarksCondition(PARTNER,
                     new Conditions(
-                            new KillCondition(1000, List.of(), List.of(), NBT_PREFIX + "partner_kills")
+                            new KillCondition(500, List.of(), List.of(), NBT_PREFIX + "partner_kills")
                     )
             ),
+
+            new MarksCondition(RIBBON_TRAINING,
+                    new Conditions(
+                            new KillCondition(1000, List.of(), List.of(), NBT_PREFIX + "ribbon_training_kills")
+                    )
+            ),
+
 
             // =====================================================================
             // MARKS DE PERSONNALITÉ
@@ -303,7 +311,7 @@ public class MarksConfig {
             // Intellectual Mark (the Scholar) — 150 kills de type Psy dans le End
             new MarksCondition(INTELLECTUAL,
                     new Conditions(
-                            new KillCondition(150, List.of("psychic"), List.of(), NBT_PREFIX + "intellectual_kills"),
+                            new KillCondition(150, List.of("psychic"), List.of("unown"), NBT_PREFIX + "intellectual_kills"),
                             List.of(new DimensionCondition(List.of("minecraft:the_end")))
                     )
             ),
