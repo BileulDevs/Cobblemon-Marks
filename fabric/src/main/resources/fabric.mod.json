@@ -13,6 +13,9 @@
   "entrypoints": {
     "main": [
       "dev.darcosse.fabric.cobblemonmarks.CobblemonMarksFabricMod"
+    ],
+    "client": [
+      "dev.darcosse.fabric.cobblemonmarks.client.CobblemonMarksFabricClientMod"
     ]
   },
   "mixins": [

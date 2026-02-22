@@ -16,13 +16,17 @@ import dev.darcosse.common.cobblemonmarks.config.Conditions;
 import dev.darcosse.common.cobblemonmarks.config.MarksCondition;
 import dev.darcosse.common.cobblemonmarks.config.MarksConfig;
 import dev.darcosse.common.cobblemonmarks.config.condition.*;
+import dev.darcosse.common.cobblemonmarks.network.PacketSender;
+import dev.darcosse.common.cobblemonmarks.network.SyncMarkProgressPayload;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class MarksHandler {
 
@@ -252,6 +256,23 @@ public class MarksHandler {
         tag.putInt(condition.getNbtKey(), currentCount);
         int required = condition.getRequiredCount();
 
+        // Construire la map complète de progression du pokémon
+        Map<String, Integer> progressMap = new HashMap<>();
+        for (MarksCondition mc : MarksConfig.CONDITIONS) {
+            KillCondition kc = (KillCondition) mc.getConditions().getKillCondition();
+            if (kc != null) {
+                int val = tag.getInt(kc.getNbtKey());
+                if (val > 0) progressMap.put(kc.getNbtKey(), val);
+            }
+            for (MarkCondition c : mc.getConditions().getRequired()) {
+                if (c instanceof DeathCondition dc) {
+                    int val = tag.getInt(dc.getNbtKey());
+                    if (val > 0) progressMap.put(dc.getNbtKey(), val);
+                }
+            }
+        }
+        PacketSender.sendToPlayer(player, new SyncMarkProgressPayload(pokemon.getUuid(), progressMap));
+
         if (currentCount >= required) {
             tag.remove(condition.getNbtKey());
             awardMark(pokemon, markCondition, player);
@@ -284,10 +305,12 @@ public class MarksHandler {
     // -------------------------------------------------------------------------
 
     private static MutableComponent pokemonName(Pokemon pokemon) {
-        String name = pokemon.getNickname() != null
-                ? pokemon.getNickname().getString()
-                : pokemon.getSpecies().getName();
-        return Component.literal(name).withStyle(s -> s.withColor(0xFFAA00));
+        if (pokemon.getNickname() != null) {
+            return Component.literal(pokemon.getNickname().getString())
+                    .withStyle(s -> s.withColor(0xFFAA00));
+        }
+        return Component.translatable("cobblemon.species." + pokemon.getSpecies().getName().toLowerCase() + ".name")
+                .withStyle(s -> s.withColor(0xFFAA00));
     }
 
     private static boolean hasMark(Pokemon pokemon, MarksCondition markCondition) {

@@ -14,7 +14,7 @@
 
   "cobblemonmarks.tooltip.condition.weather": "Weather: %s",
   "cobblemonmarks.tooltip.condition.biome": "Biome: %s",
-  "cobblemonmarks.tooltip.condition.time": "Time: %s - %s",
+  "cobblemonmarks.tooltip.condition.time": "Time: %s%s%s",
   "cobblemonmarks.tooltip.condition.level.stronger": "Opponent stronger than us",
   "cobblemonmarks.tooltip.condition.level.range": "Opponent level: %s%s%s",
   "cobblemonmarks.tooltip.condition.level.exact": "Opponent level: %s",
@@ -25,6 +25,7 @@
   "cobblemonmarks.tooltip.condition.shiny": "Catch a shiny Pokémon in battle",
   "cobblemonmarks.tooltip.condition.battle_turns": "Win in %s turn(s) max",
   "cobblemonmarks.tooltip.condition.form": "Pokémon form: %s",
+
 
   "cobblemonmarks.weather.rain": "Rain",
   "cobblemonmarks.weather.thunder": "Thunder",

@@ -344,7 +344,9 @@ public class MarksConfig {
             // Thème "costaud/imposant" → formes puissantes
             new MarksCondition(ROWDY,
                     new Conditions(
-                            new FormKillCondition(100, List.of("mega", "gigantamax"), NBT_PREFIX + "rowdy_form_kills")
+                            new KillCondition(125, List.of(), List.of(), NBT_PREFIX + "rowdy_kills"),
+                            List.of(new SizeCondition(List.of(SizeCondition.Size.XL, SizeCondition.Size.XXL, SizeCondition.Size.XXXL))),
+                            List.of()
                     )
             ),
 
@@ -368,9 +370,11 @@ public class MarksConfig {
             ),
 
             new MarksCondition(TEARY,
-                    new Conditions(List.of(
-                            new DeathCondition(50, NBT_PREFIX + "teary_deaths")
-                    ))
+                    new Conditions(
+                            new KillCondition(150, List.of(), List.of(), NBT_PREFIX + "teary_kills"),
+                            List.of(new SizeCondition(List.of(SizeCondition.Size.XS, SizeCondition.Size.XXS, SizeCondition.Size.XXXS))),
+                            List.of()
+                    )
             ),
 
             new MarksCondition(THORNY,
@@ -388,7 +392,31 @@ public class MarksConfig {
 
             new MarksCondition(UPBEAT,
                     new Conditions(
-                            new KillCondition(200, List.of(), List.of("pikachu", "jigglypuff", "skitty", "togepi", "marill", "snubbull", "togekiss"), NBT_PREFIX + "upbeat_kills")
+                            new KillCondition(200, List.of(), List.of(
+                                    "jigglypuff",
+                                    "wigglytuff",
+                                    "politoed",
+                                    "exploud",
+                                    "loudred",
+                                    "whismur",
+                                    "chimecho",
+                                    "kricketune",
+                                    "chatot",
+                                    "meloetta",
+                                    "primarina",
+                                    "toxtricity",
+                                    "skeledirge",
+                                    "altaria",
+                                    "gardevoir",
+                                    "maractus",
+                                    "ludicolo",
+                                    "noivern",
+                                    "rillaboom",
+                                    "bronzong",
+                                    "chingling",
+                                    "misdreavus",
+                                    "kommo-o"
+                            ), NBT_PREFIX + "upbeat_kills")
                     )
             ),
 

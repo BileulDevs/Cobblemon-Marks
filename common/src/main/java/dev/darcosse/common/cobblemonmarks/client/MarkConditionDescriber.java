@@ -17,7 +17,26 @@ public class MarkConditionDescriber {
     private static final int YELLOW = 0xFFAA00;
     private static final int CYAN   = 0x55FFFF;
 
-    private static final String defeatEmoji = "☠ ";
+    // Emojis
+    private static final String EMOJI_DEFEAT  = "⚔ ";
+    private static final String EMOJI_STREAK  = "🔥 ";
+    private static final String EMOJI_CATCH   = "★ ";
+    private static final String EMOJI_KO      = "🪦 ";
+    private static final String EMOJI_TIME    = "⌚ ";
+    private static final String EMOJI_CHECK   = "✔ ";
+    private static final String EMOJI_CROSS   = "✘ ";
+    private static final String EMOJI_SHINY   = "★ ";
+    private static final String EMOJI_BATTLE_TIME = "⌛ ";
+
+    private static String getWeatherEmoji(String weather) {
+        return switch (weather.toLowerCase()) {
+            case "clear"   -> "☀ ";
+            case "rain"    -> "☂ ";
+            case "thunder" -> "⚡ ";
+            case "snow"    -> "❄ ";
+            default        -> "🌡 ";
+        };
+    }
 
     private static MutableComponent white(String text) { return Component.literal(text).withStyle(s -> s.withColor(WHITE)); }
     private static MutableComponent gray(String text)  { return Component.literal(text).withStyle(s -> s.withColor(GRAY)); }
@@ -74,7 +93,7 @@ public class MarkConditionDescriber {
 
         // Progression
         if (killCond != null) {
-            int current = pokemon.getPersistentData().getInt(killCond.getNbtKey());
+            int current = MarkProgressCache.get(pokemon.getUuid(), killCond.getNbtKey());
             int required = killCond.getRequiredCount();
             lines.add(Component.translatable("cobblemonmarks.tooltip.progress",
                     white(String.valueOf(current)),
@@ -85,13 +104,13 @@ public class MarkConditionDescriber {
 
         // Description du slot killCondition
         if (killCond instanceof StreakCondition) {
-            lines.add(Component.literal("🔥 ").withStyle(s -> s.withColor(0xFF6600))
+            lines.add(Component.literal(EMOJI_STREAK).withStyle(s -> s.withColor(0xFF6600))
                     .append(Component.translatable("cobblemonmarks.tooltip.kill.streak",
                             white(String.valueOf(killCond.getRequiredCount()))
                     ).withStyle(s -> s.withColor(GRAY))));
 
         } else if (killCond instanceof FishingKillCondition) {
-            lines.add(Component.literal(defeatEmoji).withStyle(s -> s.withColor(0xFFAA00))
+            lines.add(Component.literal(EMOJI_DEFEAT).withStyle(s -> s.withColor(0xFFAA00))
                     .append(Component.translatable("cobblemonmarks.tooltip.kill.fishing",
                             white(String.valueOf(killCond.getRequiredCount()))
                     ).withStyle(s -> s.withColor(GRAY))));
@@ -101,7 +120,7 @@ public class MarkConditionDescriber {
                     .map(f -> (MutableComponent) Component.literal(f).withStyle(s -> s.withColor(CYAN)))
                     .reduce((a, b) -> a.append(gray(", ")).append(b))
                     .orElse(Component.literal("?"));
-            lines.add(Component.literal(defeatEmoji).withStyle(s -> s.withColor(0xFFAA00))
+            lines.add(Component.literal(EMOJI_DEFEAT).withStyle(s -> s.withColor(0xFFAA00))
                     .append(Component.translatable("cobblemonmarks.tooltip.kill.form",
                             white(String.valueOf(killCond.getRequiredCount())), forms
                     ).withStyle(s -> s.withColor(GRAY))));
@@ -109,12 +128,12 @@ public class MarkConditionDescriber {
         } else if (killCond instanceof CatchCondition) {
             boolean hasShiny = conditions.getRequired().stream().anyMatch(c -> c instanceof ShinyCondition);
             if (hasShiny) {
-                lines.add(Component.literal("🎯 ").withStyle(s -> s.withColor(0xFFAA00))
+                lines.add(Component.literal(EMOJI_CATCH).withStyle(s -> s.withColor(0xFFAA00))
                         .append(Component.translatable("cobblemonmarks.tooltip.kill.catch_shiny",
                                 white(String.valueOf(killCond.getRequiredCount()))
                         ).withStyle(s -> s.withColor(GRAY))));
             } else {
-                lines.add(Component.literal("🎯 ").withStyle(s -> s.withColor(0xFFAA00))
+                lines.add(Component.literal(EMOJI_CATCH).withStyle(s -> s.withColor(0xFFAA00))
                         .append(Component.translatable("cobblemonmarks.tooltip.kill.catch",
                                 white(String.valueOf(killCond.getRequiredCount()))
                         ).withStyle(s -> s.withColor(GRAY))));
@@ -129,21 +148,39 @@ public class MarkConditionDescriber {
         for (MarkCondition c : conditions.getRequired()) {
             if (c instanceof DeathCondition) continue;
             if (c instanceof ShinyCondition && killIsCatch) continue;
-            lines.add(Component.literal("✔ ").withStyle(s -> s.withColor(0x55FF55))
-                    .append(describeCondition(c, 0x55FF55)));
+
+            // Ces conditions ont leur propre emoji, pas d'encoche
+            boolean hasOwnEmoji = c instanceof TimeCondition
+                    || c instanceof WeatherCondition
+                    || c instanceof TimeOfBattleCondition;
+
+            if (hasOwnEmoji) {
+                lines.add(describeCondition(c, 0x55FF55));
+            } else {
+                lines.add(Component.literal(EMOJI_CHECK).withStyle(s -> s.withColor(0x55FF55))
+                        .append(describeCondition(c, 0x55FF55)));
+            }
         }
 
         // Conditions excluded
         for (MarkCondition c : conditions.getExcluded()) {
-            lines.add(Component.literal("✘ ").withStyle(s -> s.withColor(0xFF5555))
-                    .append(describeCondition(c, 0xFF5555)));
+            boolean hasOwnEmoji = c instanceof TimeCondition
+                    || c instanceof WeatherCondition
+                    || c instanceof TimeOfBattleCondition;
+
+            if (hasOwnEmoji) {
+                lines.add(describeCondition(c, 0xFF5555));
+            } else {
+                lines.add(Component.literal(EMOJI_CROSS).withStyle(s -> s.withColor(0xFF5555))
+                        .append(describeCondition(c, 0xFF5555)));
+            }
         }
 
         // Death condition — progression en tête
         for (MarkCondition c : conditions.getRequired()) {
             if (c instanceof DeathCondition dc) {
-                int current = pokemon.getPersistentData().getInt(dc.getNbtKey());
-                lines.add(0, Component.literal("🪦 ").withStyle(s -> s.withColor(WHITE))
+                int current = MarkProgressCache.get(pokemon.getUuid(), dc.getNbtKey());
+                lines.add(0, Component.literal(EMOJI_KO).withStyle(s -> s.withColor(WHITE))
                         .append(Component.translatable("cobblemonmarks.tooltip.ko",
                                 white(String.valueOf(current)),
                                 gray("/"),
@@ -167,30 +204,30 @@ public class MarkConditionDescriber {
                 .reduce((a, b) -> a.append(gray("/")).append(b))
                 .orElse(Component.literal(""));
 
-        MutableComponent punchEmoji = Component.literal(defeatEmoji).withStyle(s -> s.withColor(0xFFAA00));
+        MutableComponent defeatEmoji = Component.literal(EMOJI_DEFEAT).withStyle(s -> s.withColor(0xFFAA00));
 
         if (!killCond.getRequiredTypes().isEmpty() && !killCond.getRequiredSpecies().isEmpty()) {
-            lines.add(punchEmoji.copy()
+            lines.add(defeatEmoji.copy()
                     .append(Component.translatable("cobblemonmarks.tooltip.kill.type_species_header",
                             white(String.valueOf(killCond.getRequiredCount())), coloredTypes
                     ).withStyle(s -> s.withColor(GRAY))));
             lines.addAll(buildSpeciesLines(killCond.getRequiredSpecies(), translatedSpecies));
 
         } else if (!killCond.getRequiredTypes().isEmpty()) {
-            lines.add(punchEmoji.copy()
+            lines.add(defeatEmoji.copy()
                     .append(Component.translatable("cobblemonmarks.tooltip.kill.type",
                             white(String.valueOf(killCond.getRequiredCount())), coloredTypes
                     ).withStyle(s -> s.withColor(GRAY))));
 
         } else if (!killCond.getRequiredSpecies().isEmpty()) {
-            lines.add(punchEmoji.copy()
+            lines.add(defeatEmoji.copy()
                     .append(Component.translatable("cobblemonmarks.tooltip.kill.species_header",
                             white(String.valueOf(killCond.getRequiredCount()))
                     ).withStyle(s -> s.withColor(GRAY))));
             lines.addAll(buildSpeciesLines(killCond.getRequiredSpecies(), translatedSpecies));
 
         } else {
-            lines.add(punchEmoji.copy()
+            lines.add(defeatEmoji.copy()
                     .append(Component.translatable("cobblemonmarks.tooltip.kill.any",
                             white(String.valueOf(killCond.getRequiredCount()))
                     ).withStyle(s -> s.withColor(GRAY))));
@@ -218,13 +255,16 @@ public class MarkConditionDescriber {
 
     private static Component describeCondition(MarkCondition c, int labelColor) {
         if (c instanceof WeatherCondition wc) {
-            MutableComponent weathers = wc.getWeathers().stream()
+            var weatherList = wc.getWeathers();
+            String firstEmoji = weatherList.isEmpty() ? "" : getWeatherEmoji(weatherList.getFirst().name());
+            MutableComponent weathers = weatherList.stream()
                     .map(w -> (MutableComponent) Component.translatable("cobblemonmarks.weather." + w.name().toLowerCase())
                             .withStyle(s -> s.withColor(CYAN)))
-                    .reduce((a, b) -> a.append(Component.literal("/").withStyle(s -> s.withColor(labelColor))).append(b))
+                    .reduce((a, b) -> a.append(gray(" / ")).append(b))
                     .orElse(Component.literal("?"));
-            return Component.translatable("cobblemonmarks.tooltip.condition.weather", weathers)
-                    .withStyle(s -> s.withColor(labelColor));
+            return Component.literal(firstEmoji).withStyle(s -> s.withColor(labelColor))
+                    .append(Component.translatable("cobblemonmarks.tooltip.condition.weather", weathers)
+                            .withStyle(s -> s.withColor(labelColor)));
         }
         if (c instanceof BiomeCondition bc) {
             MutableComponent biomes = bc.getRequiredBiomes().stream()
@@ -235,10 +275,12 @@ public class MarkConditionDescriber {
                     .withStyle(s -> s.withColor(labelColor));
         }
         if (c instanceof TimeCondition tc)
-            return Component.translatable("cobblemonmarks.tooltip.condition.time",
-                    cyan(ticksToTime((int) tc.getMinTime())),
-                    cyan(ticksToTime((int) tc.getMaxTime()))
-            ).withStyle(s -> s.withColor(labelColor));
+            return Component.literal(EMOJI_TIME).withStyle(s -> s.withColor(labelColor))
+                    .append(Component.translatable("cobblemonmarks.tooltip.condition.time",
+                            cyan(ticksToTime((int) tc.getMinTime())),
+                            gray(" - "),
+                            cyan(ticksToTime((int) tc.getMaxTime()))
+                    ).withStyle(s -> s.withColor(labelColor)));
         if (c instanceof LevelCondition lc) {
             if (lc.isMustBeStrongerThanKiller())
                 return Component.translatable("cobblemonmarks.tooltip.condition.level.stronger")
@@ -292,12 +334,14 @@ public class MarkConditionDescriber {
                     cyan(String.valueOf(fc.getRequiredFriendship()))
             ).withStyle(s -> s.withColor(labelColor));
         if (c instanceof ShinyCondition)
-            return Component.translatable("cobblemonmarks.tooltip.condition.shiny")
-                    .withStyle(s -> s.withColor(labelColor));
+            return Component.literal(EMOJI_SHINY).withStyle(s -> s.withColor(0xFFD700))
+                    .append(Component.translatable("cobblemonmarks.tooltip.condition.shiny")
+                            .withStyle(s -> s.withColor(labelColor)));
         if (c instanceof TimeOfBattleCondition tbc)
-            return Component.translatable("cobblemonmarks.tooltip.condition.battle_turns",
-                    cyan(String.valueOf(tbc.getRequiredCount()))
-            ).withStyle(s -> s.withColor(labelColor));
+            return Component.literal(EMOJI_BATTLE_TIME).withStyle(s -> s.withColor(labelColor))
+                    .append(Component.translatable("cobblemonmarks.tooltip.condition.battle_turns",
+                            cyan(String.valueOf(tbc.getRequiredCount()))
+                    ).withStyle(s -> s.withColor(labelColor)));
         if (c instanceof FormKillCondition fkc) {
             MutableComponent forms = fkc.getRequiredForms().stream()
                     .map(f -> (MutableComponent) Component.literal(f).withStyle(s -> s.withColor(CYAN)))
