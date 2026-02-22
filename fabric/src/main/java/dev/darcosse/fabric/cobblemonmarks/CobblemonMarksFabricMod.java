@@ -5,6 +5,7 @@ import dev.darcosse.common.cobblemonmarks.network.PacketSender;
 import dev.darcosse.fabric.cobblemonmarks.network.FabricNetworkHandler;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.fabricmc.api.ModInitializer;
+import net.fabricmc.loader.api.FabricLoader;
 
 /**
  * Fabric-specific common initialization.
@@ -14,13 +15,9 @@ public class CobblemonMarksFabricMod implements ModInitializer {
 
     @Override
     public void onInitialize() {
-        // Initialize common logic (Handlers, Config, etc.)
+        CobblemonMarksMod.loadConfig(FabricLoader.getInstance().getConfigDir());
         CobblemonMarksMod.init();
-
-        // Register S2C payloads
         FabricNetworkHandler.registerServer();
-
-        // Inject Fabric implementation into the common PacketSender
         PacketSender.setImpl(ServerPlayNetworking::send);
     }
 }
