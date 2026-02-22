@@ -10,6 +10,14 @@ import net.minecraft.network.chat.MutableComponent;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Utility class responsible for generating human-readable descriptions for Mark conditions.
+ * It converts complex logic and NBT data into formatted Minecraft Components with icons and colors.
+ *
+ * @author Darcosse
+ * @version 1.0
+ * @since 2026
+ */
 public class MarkConditionDescriber {
 
     private static final int WHITE  = 0xFFFFFF;
@@ -17,7 +25,6 @@ public class MarkConditionDescriber {
     private static final int YELLOW = 0xFFAA00;
     private static final int CYAN   = 0x55FFFF;
 
-    // Emojis
     private static final String EMOJI_DEFEAT  = "⚔ ";
     private static final String EMOJI_STREAK  = "🔥 ";
     private static final String EMOJI_CATCH   = "★ ";
@@ -28,6 +35,9 @@ public class MarkConditionDescriber {
     private static final String EMOJI_SHINY   = "★ ";
     private static final String EMOJI_BATTLE_TIME = "⌛ ";
 
+    /**
+     * Returns a weather-specific emoji based on the weather ID.
+     */
     private static String getWeatherEmoji(String weather) {
         return switch (weather.toLowerCase()) {
             case "clear"   -> "☀ ";
@@ -42,6 +52,9 @@ public class MarkConditionDescriber {
     private static MutableComponent gray(String text)  { return Component.literal(text).withStyle(s -> s.withColor(GRAY)); }
     private static MutableComponent cyan(String text)  { return Component.literal(text).withStyle(s -> s.withColor(CYAN)); }
 
+    /**
+     * Maps Pokémon types to their respective HEX color values for UI consistency.
+     */
     private static int getTypeColorInt(String type) {
         return switch (type.toLowerCase()) {
             case "normal"   -> 0xE3E3E3;
@@ -66,6 +79,9 @@ public class MarkConditionDescriber {
         };
     }
 
+    /**
+     * Maps status effects to their respective signature colors.
+     */
     private static int getStatusColorInt(String status) {
         return switch (status.toLowerCase()) {
             case "psn", "poison"    -> 0xA040A0;
@@ -78,6 +94,9 @@ public class MarkConditionDescriber {
         };
     }
 
+    /**
+     * Retrieves the primary type color of a species for text highlighting.
+     */
     private static int getSpeciesPrimaryTypeColor(String speciesName) {
         var species = PokemonSpecies.getByName(speciesName.toLowerCase());
         if (species == null) return WHITE;
@@ -86,12 +105,15 @@ public class MarkConditionDescriber {
         return getTypeColorInt(types.iterator().next().getName().toLowerCase());
     }
 
+    /**
+     * Main entry point to generate a full list of descriptive components for a Mark.
+     * Handles progress bars, required/excluded conditions, and special "Death" logic.
+     */
     public static List<Component> describe(MarksCondition markCondition, Pokemon pokemon) {
         List<Component> lines = new ArrayList<>();
         var conditions = markCondition.getConditions();
         MarkCondition killCond = conditions.getKillCondition();
 
-        // Progression
         if (killCond != null) {
             int current = MarkProgressCache.get(pokemon.getUuid(), killCond.getNbtKey());
             int required = killCond.getRequiredCount();
@@ -102,7 +124,6 @@ public class MarkConditionDescriber {
             ).withStyle(s -> s.withColor(YELLOW)));
         }
 
-        // Description du slot killCondition
         if (killCond instanceof StreakCondition) {
             lines.add(Component.literal(EMOJI_STREAK).withStyle(s -> s.withColor(0xFF6600))
                     .append(Component.translatable("cobblemonmarks.tooltip.kill.streak",
@@ -143,13 +164,11 @@ public class MarkConditionDescriber {
             lines.addAll(describeKillCondition(kc));
         }
 
-        // Conditions required (sauf Death et ShinyCondition combinée à CatchCondition)
         boolean killIsCatch = killCond instanceof CatchCondition;
         for (MarkCondition c : conditions.getRequired()) {
             if (c instanceof DeathCondition) continue;
             if (c instanceof ShinyCondition && killIsCatch) continue;
 
-            // Ces conditions ont leur propre emoji, pas d'encoche
             boolean hasOwnEmoji = c instanceof TimeCondition
                     || c instanceof WeatherCondition
                     || c instanceof TimeOfBattleCondition;
@@ -162,7 +181,6 @@ public class MarkConditionDescriber {
             }
         }
 
-        // Conditions excluded
         for (MarkCondition c : conditions.getExcluded()) {
             boolean hasOwnEmoji = c instanceof TimeCondition
                     || c instanceof WeatherCondition
@@ -176,7 +194,6 @@ public class MarkConditionDescriber {
             }
         }
 
-        // Death condition — progression en tête
         for (MarkCondition c : conditions.getRequired()) {
             if (c instanceof DeathCondition dc) {
                 int current = MarkProgressCache.get(pokemon.getUuid(), dc.getNbtKey());
@@ -192,6 +209,9 @@ public class MarkConditionDescriber {
         return lines;
     }
 
+    /**
+     * Describes specific kill-count conditions, supporting species and type filtering.
+     */
     private static List<Component> describeKillCondition(KillCondition killCond) {
         List<Component> lines = new ArrayList<>();
 
@@ -236,6 +256,9 @@ public class MarkConditionDescriber {
         return lines;
     }
 
+    /**
+     * Splits a list of species names into multiple lines for compact UI display.
+     */
     private static List<Component> buildSpeciesLines(List<String> originalNames, List<String> translated) {
         List<Component> lines = new ArrayList<>();
         for (int i = 0; i < translated.size(); i += 4) {
@@ -253,6 +276,9 @@ public class MarkConditionDescriber {
         return lines;
     }
 
+    /**
+     * Converts an abstract MarkCondition into a specific translated component.
+     */
     private static Component describeCondition(MarkCondition c, int labelColor) {
         if (c instanceof WeatherCondition wc) {
             var weatherList = wc.getWeathers();
@@ -353,6 +379,9 @@ public class MarkConditionDescriber {
         return Component.literal(c.getClass().getSimpleName()).withStyle(s -> s.withColor(labelColor));
     }
 
+    /**
+     * Converts Minecraft game ticks into a formatted 24h string (HH:mm).
+     */
     private static String ticksToTime(int ticks) {
         int totalMinutes = (int) (((ticks + 6000) % 24000) / 24000.0 * 1440);
         int hours = totalMinutes / 60;

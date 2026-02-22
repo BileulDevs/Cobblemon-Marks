@@ -200,7 +200,7 @@ public class MarksConfig {
             // CatchCondition obligatoire pour que handleCapture traite cette mark
             new MarksCondition(RARE,
                     new Conditions(
-                            new CatchCondition(1, NBT_PREFIX + "rare_shiny_captures"),
+                            new CatchCondition(3, NBT_PREFIX + "rare_shiny_captures"),
                             List.of(new ShinyCondition())
                     )
             ),
@@ -247,13 +247,6 @@ public class MarksConfig {
                     )
             ),
 
-            new MarksCondition(RARE,
-                    new Conditions(
-                            new CatchCondition(1, NBT_PREFIX + "rare_shiny_captures"),
-                            List.of(new ShinyCondition())
-                    )
-            ),
-
             new MarksCondition(CRAFTY,
                     new Conditions(
                             new KillCondition(100, List.of(), List.of(), NBT_PREFIX + "crafty_kills"),
@@ -263,7 +256,7 @@ public class MarksConfig {
 
             new MarksCondition(CHARISMATIC,
                     new Conditions(
-                            new CatchCondition(3, NBT_PREFIX + "charismatic_form_kills"),
+                            new CatchCondition(5, NBT_PREFIX + "charismatic_form_kills"),
                             List.of(new ShinyCondition())
                     )
             ),
@@ -310,7 +303,38 @@ public class MarksConfig {
 
             new MarksCondition(JOYFUL,
                     new Conditions(
-                            new KillCondition(200, List.of(), List.of("pikachu", "jigglypuff", "clefairy", "togepi", "skitty", "sylveon", "togekiss"), NBT_PREFIX + "joyful_kills")
+                            new KillCondition(200, List.of(), List.of(
+                                    "pikachu",
+                                    "jigglypuff",
+                                    "clefairy",
+                                    "togepi",
+                                    "skitty",
+                                    "sylveon",
+                                    "togekiss",
+                                    "happiny",
+                                    "chansey",
+                                    "blissey",
+                                    "comfey",
+                                    "shaymin",
+                                    "victini",
+                                    "plusle",
+                                    "minun",
+                                    "pachirisu",
+                                    "emolga",
+                                    "dedenne",
+                                    "alcremie",
+                                    "bellossom",
+                                    "cherrim",
+                                    "lilligant",
+                                    "eevee",
+                                    "audino",
+                                    "teddiursa",
+                                    "spinda",
+                                    "ribombee",
+                                    "cutiefly",
+                                    "wigglytuff",
+                                    "vulpix"
+                            ), NBT_PREFIX + "joyful_kills")
                     )
             ),
 

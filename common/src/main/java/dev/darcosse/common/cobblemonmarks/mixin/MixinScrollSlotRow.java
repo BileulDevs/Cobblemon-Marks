@@ -13,6 +13,15 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.util.List;
 
+/**
+ * Mixin for the inner ScrollSlotRow class of the MarksScrollingWidget.
+ * This class handles the actual rendering of the mark icons within the scrolling list.
+ * It is responsible for drawing "locked" marks as darkened placeholders.
+ *
+ * @author Darcosse
+ * @version 1.1
+ * @since 2026
+ */
 @Mixin(value = MarksScrollingWidget.ScrollSlotRow.class, remap = false)
 public abstract class MixinScrollSlotRow implements IScrollSlotRow {
 
@@ -20,9 +29,10 @@ public abstract class MixinScrollSlotRow implements IScrollSlotRow {
     @Shadow public int x;
     @Shadow public int y;
 
-    // Stocke la liste des ResourceLocation des marks non obtenues, dans l'ordre des nulls
+    /** Stores the ResourceLocations of unowned marks in the order they appear as 'null' in the markList. */
     private List<ResourceLocation> cobblemonmarks$unownedMarkTextures = new java.util.ArrayList<>();
 
+    /** Tracks which null slot (if any) is currently being hovered by the mouse. */
     private int cobblemonmarks$hoveredNullIndex = -1;
 
     @Override
@@ -40,6 +50,10 @@ public abstract class MixinScrollSlotRow implements IScrollSlotRow {
         this.cobblemonmarks$unownedMarkTextures = textures;
     }
 
+    /**
+     * Injects rendering logic at the end of the row's render method.
+     * This draws the darkened icons for unowned marks in slots where markList contains null.
+     */
     @Inject(method = "renderRow", at = @At("TAIL"))
     private void cobblemonmarks$renderDisabledMarks(
             GuiGraphics context, int y, int x, int mouseX, int mouseY,
@@ -50,27 +64,37 @@ public abstract class MixinScrollSlotRow implements IScrollSlotRow {
         int nullCount = 0;
 
         for (int index = 0; index < markList.size(); index++) {
+            // Skip slots that contain actual owned Marks (vanilla Cobblemon renders these)
             if (markList.get(index) != null) continue;
 
+            // Calculate position identical to vanilla slot positioning
             int startPosX = x + ((horizontalSpacing + 16) * index);
             int startPosY = y + 3;
 
+            // Simple collision check for tooltips
             boolean hovered = mouseX >= startPosX && mouseX <= startPosX + 16
                     && mouseY >= startPosY && mouseY <= startPosY + 16;
 
             if (hovered) cobblemonmarks$hoveredNullIndex = index;
 
+            // Only render if we have a assigned texture for this specific null slot
             if (nullCount < cobblemonmarks$unownedMarkTextures.size()) {
                 ResourceLocation texture = cobblemonmarks$unownedMarkTextures.get(nullCount);
 
                 RenderSystem.enableBlend();
                 RenderSystem.defaultBlendFunc();
-                // Grisé : teinte sombre, plus lumineux si hovered
+
+                /* * VISUAL FEEDBACK LOGIC:
+                 * brightness: 0.30f (very dark) -> 0.55f (semi-dark on hover)
+                 * alpha: 0.6f (translucent) -> 0.85f (near opaque on hover)
+                 */
                 float brightness = hovered ? 0.55f : 0.30f;
                 RenderSystem.setShaderColor(brightness, brightness, brightness, hovered ? 0.85f : 0.6f);
 
+                // Draw the 16x16 icon
                 context.blit(texture, startPosX, startPosY, 0, 0, 16, 16, 16, 16);
 
+                // Reset color buffer to avoid tinting subsequent UI elements
                 RenderSystem.setShaderColor(1f, 1f, 1f, 1f);
             }
 
