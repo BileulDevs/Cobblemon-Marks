@@ -1,0 +1,47 @@
+{
+  "cobblemonmarks.tooltip.progress": "進捗: %s%s%s",
+  "cobblemonmarks.tooltip.ko": "K.O: %s%s%s",
+
+  "cobblemonmarks.tooltip.kill.any": "ポケモンを%s体倒す",
+  "cobblemonmarks.tooltip.kill.type": "%2$sタイプのポケモンを%1$s体倒す",
+  "cobblemonmarks.tooltip.kill.species_header": "以下のポケモンを%s体倒す:",
+  "cobblemonmarks.tooltip.kill.type_species_header": "%2$sタイプの以下のポケモンを%1$s体倒す:",
+  "cobblemonmarks.tooltip.kill.fishing": "釣ったポケモンを%s体倒す",
+  "cobblemonmarks.tooltip.kill.streak": "気絶せずに%s回連続で勝利する",
+  "cobblemonmarks.tooltip.kill.form": "%2$sのフォルムのポケモンを%1$s体倒す",
+  "cobblemonmarks.tooltip.kill.catch": "バトル中にポケモンを%s体捕まえる",
+  "cobblemonmarks.tooltip.kill.catch_shiny": "バトル中に色違いのポケモンを%s体捕まえる",
+
+  "cobblemonmarks.tooltip.condition.weather": "天気: %s",
+  "cobblemonmarks.tooltip.condition.biome": "バイオーム: %s",
+  "cobblemonmarks.tooltip.condition.time": "時間: %s%s%s",
+  "cobblemonmarks.tooltip.condition.level.stronger": "相手が自分より強い",
+  "cobblemonmarks.tooltip.condition.level.range": "相手のレベル: %s%s%s",
+  "cobblemonmarks.tooltip.condition.level.exact": "相手のレベル: %s",
+  "cobblemonmarks.tooltip.condition.dimension": "ディメンション: %s",
+  "cobblemonmarks.tooltip.condition.status": "自分のポケモンの状態: %s",
+  "cobblemonmarks.tooltip.condition.size": "サイズ: %s",
+  "cobblemonmarks.tooltip.condition.friendship": "なつき度 ≥ %s",
+  "cobblemonmarks.tooltip.condition.shiny": "バトル中に色違いのポケモンを捕まえる",
+  "cobblemonmarks.tooltip.condition.battle_turns": "%sターン以内に勝利する",
+  "cobblemonmarks.tooltip.condition.form": "ポケモンのフォルム: %s",
+
+  "cobblemonmarks.weather.rain": "雨",
+  "cobblemonmarks.weather.thunder": "雷雨",
+  "cobblemonmarks.weather.snow": "雪",
+  "cobblemonmarks.weather.clear": "晴れ",
+
+  "cobblemonmarks.size.xxxs": "XXXS",
+  "cobblemonmarks.size.xxs": "XXS",
+  "cobblemonmarks.size.xs": "XS",
+  "cobblemonmarks.size.s": "S",
+  "cobblemonmarks.size.m": "M",
+  "cobblemonmarks.size.l": "L",
+  "cobblemonmarks.size.xl": "XL",
+  "cobblemonmarks.size.xxl": "XXL",
+  "cobblemonmarks.size.xxxl": "XXXL",
+
+  "cobblemonmarks.message.progress": "[%s] %s/%s",
+  "cobblemonmarks.message.streak_lost": "[%s] 連勝が途切れた！ 0/%s",
+  "cobblemonmarks.message.mark_obtained": "✨ %sが新しいマークを獲得: %s!"
+}

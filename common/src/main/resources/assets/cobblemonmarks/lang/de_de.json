@@ -1,0 +1,47 @@
+{
+  "cobblemonmarks.tooltip.progress": "Fortschritt: %s%s%s",
+  "cobblemonmarks.tooltip.ko": "K.O: %s%s%s",
+
+  "cobblemonmarks.tooltip.kill.any": "%s Pokémon besiegen",
+  "cobblemonmarks.tooltip.kill.type": "%s Pokémon vom Typ %s besiegen",
+  "cobblemonmarks.tooltip.kill.species_header": "%s Pokémon besiegen, darunter:",
+  "cobblemonmarks.tooltip.kill.type_species_header": "%s Pokémon vom Typ %s besiegen, darunter:",
+  "cobblemonmarks.tooltip.kill.fishing": "%s geangelte Pokémon besiegen",
+  "cobblemonmarks.tooltip.kill.streak": "%s Kämpfe in Folge gewinnen ohne zu fallen",
+  "cobblemonmarks.tooltip.kill.form": "%s Pokémon in Form %s besiegen",
+  "cobblemonmarks.tooltip.kill.catch": "%s Pokémon im Kampf fangen",
+  "cobblemonmarks.tooltip.kill.catch_shiny": "%s schillernde Pokémon im Kampf fangen",
+
+  "cobblemonmarks.tooltip.condition.weather": "Wetter: %s",
+  "cobblemonmarks.tooltip.condition.biome": "Biom: %s",
+  "cobblemonmarks.tooltip.condition.time": "Uhrzeit: %s%s%s",
+  "cobblemonmarks.tooltip.condition.level.stronger": "Gegner stärker als wir",
+  "cobblemonmarks.tooltip.condition.level.range": "Gegnerlevel: %s%s%s",
+  "cobblemonmarks.tooltip.condition.level.exact": "Gegnerlevel: %s",
+  "cobblemonmarks.tooltip.condition.dimension": "Dimension: %s",
+  "cobblemonmarks.tooltip.condition.status": "Status unseres Pokémon: %s",
+  "cobblemonmarks.tooltip.condition.size": "Größe: %s",
+  "cobblemonmarks.tooltip.condition.friendship": "Freundschaft ≥ %s",
+  "cobblemonmarks.tooltip.condition.shiny": "Ein schillerndes Pokémon im Kampf fangen",
+  "cobblemonmarks.tooltip.condition.battle_turns": "In maximal %s Runde(n) gewinnen",
+  "cobblemonmarks.tooltip.condition.form": "Pokémon-Form: %s",
+
+  "cobblemonmarks.weather.rain": "Regen",
+  "cobblemonmarks.weather.thunder": "Gewitter",
+  "cobblemonmarks.weather.snow": "Schnee",
+  "cobblemonmarks.weather.clear": "Klar",
+
+  "cobblemonmarks.size.xxxs": "XXXS",
+  "cobblemonmarks.size.xxs": "XXS",
+  "cobblemonmarks.size.xs": "XS",
+  "cobblemonmarks.size.s": "S",
+  "cobblemonmarks.size.m": "M",
+  "cobblemonmarks.size.l": "L",
+  "cobblemonmarks.size.xl": "XL",
+  "cobblemonmarks.size.xxl": "XXL",
+  "cobblemonmarks.size.xxxl": "XXXL",
+
+  "cobblemonmarks.message.progress": "[%s] %s/%s",
+  "cobblemonmarks.message.streak_lost": "[%s] Serie verloren! 0/%s",
+  "cobblemonmarks.message.mark_obtained": "✨ %s hat ein neues Abzeichen erhalten: %s!"
+}

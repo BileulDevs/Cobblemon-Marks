@@ -415,7 +415,7 @@ public class MarksConfig {
                                     "bronzong",
                                     "chingling",
                                     "misdreavus",
-                                    "kommo-o"
+                                    "kommoo"
                             ), NBT_PREFIX + "upbeat_kills")
                     )
             ),

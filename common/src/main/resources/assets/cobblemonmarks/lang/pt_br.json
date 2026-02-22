@@ -1,0 +1,47 @@
+{
+  "cobblemonmarks.tooltip.progress": "Progresso: %s%s%s",
+  "cobblemonmarks.tooltip.ko": "K.O: %s%s%s",
+
+  "cobblemonmarks.tooltip.kill.any": "Derrotar %s Pokémon",
+  "cobblemonmarks.tooltip.kill.type": "Derrotar %s Pokémon do tipo %s",
+  "cobblemonmarks.tooltip.kill.species_header": "Derrotar %s Pokémon entre:",
+  "cobblemonmarks.tooltip.kill.type_species_header": "Derrotar %s Pokémon do tipo %s entre:",
+  "cobblemonmarks.tooltip.kill.fishing": "Derrotar %s Pokémon pescados",
+  "cobblemonmarks.tooltip.kill.streak": "Vencer %s batalhas seguidas sem desmaiar",
+  "cobblemonmarks.tooltip.kill.form": "Derrotar %s Pokémon da forma: %s",
+  "cobblemonmarks.tooltip.kill.catch": "Capturar %s Pokémon em batalha",
+  "cobblemonmarks.tooltip.kill.catch_shiny": "Capturar %s Pokémon shiny em batalha",
+
+  "cobblemonmarks.tooltip.condition.weather": "Clima: %s",
+  "cobblemonmarks.tooltip.condition.biome": "Bioma: %s",
+  "cobblemonmarks.tooltip.condition.time": "Horário: %s%s%s",
+  "cobblemonmarks.tooltip.condition.level.stronger": "Oponente mais forte que nós",
+  "cobblemonmarks.tooltip.condition.level.range": "Nível do oponente: %s%s%s",
+  "cobblemonmarks.tooltip.condition.level.exact": "Nível do oponente: %s",
+  "cobblemonmarks.tooltip.condition.dimension": "Dimensão: %s",
+  "cobblemonmarks.tooltip.condition.status": "Status do nosso Pokémon: %s",
+  "cobblemonmarks.tooltip.condition.size": "Tamanho: %s",
+  "cobblemonmarks.tooltip.condition.friendship": "Amizade ≥ %s",
+  "cobblemonmarks.tooltip.condition.shiny": "Capturar um Pokémon shiny em batalha",
+  "cobblemonmarks.tooltip.condition.battle_turns": "Vencer em no máximo %s turno(s)",
+  "cobblemonmarks.tooltip.condition.form": "Forma do Pokémon: %s",
+
+  "cobblemonmarks.weather.rain": "Chuva",
+  "cobblemonmarks.weather.thunder": "Tempestade",
+  "cobblemonmarks.weather.snow": "Neve",
+  "cobblemonmarks.weather.clear": "Limpo",
+
+  "cobblemonmarks.size.xxxs": "XXXS",
+  "cobblemonmarks.size.xxs": "XXS",
+  "cobblemonmarks.size.xs": "XS",
+  "cobblemonmarks.size.s": "S",
+  "cobblemonmarks.size.m": "M",
+  "cobblemonmarks.size.l": "L",
+  "cobblemonmarks.size.xl": "XL",
+  "cobblemonmarks.size.xxl": "XXL",
+  "cobblemonmarks.size.xxxl": "XXXL",
+
+  "cobblemonmarks.message.progress": "[%s] %s/%s",
+  "cobblemonmarks.message.streak_lost": "[%s] Sequência perdida! 0/%s",
+  "cobblemonmarks.message.mark_obtained": "✨ %s obteve uma nova marca: %s!"
+}

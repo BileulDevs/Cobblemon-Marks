@@ -1,0 +1,47 @@
+{
+  "cobblemonmarks.tooltip.progress": "进度: %s%s%s",
+  "cobblemonmarks.tooltip.ko": "K.O: %s%s%s",
+
+  "cobblemonmarks.tooltip.kill.any": "击败%s只宝可梦",
+  "cobblemonmarks.tooltip.kill.type": "击败%s只%s属性宝可梦",
+  "cobblemonmarks.tooltip.kill.species_header": "击败%s只以下宝可梦:",
+  "cobblemonmarks.tooltip.kill.type_species_header": "击败%s只%s属性宝可梦，包括:",
+  "cobblemonmarks.tooltip.kill.fishing": "击败%s只钓到的宝可梦",
+  "cobblemonmarks.tooltip.kill.streak": "连续%s次战斗获胜且不倒下",
+  "cobblemonmarks.tooltip.kill.form": "击败%s只%s形态的宝可梦",
+  "cobblemonmarks.tooltip.kill.catch": "在战斗中捕获%s只宝可梦",
+  "cobblemonmarks.tooltip.kill.catch_shiny": "在战斗中捕获%s只异色宝可梦",
+
+  "cobblemonmarks.tooltip.condition.weather": "天气: %s",
+  "cobblemonmarks.tooltip.condition.biome": "生物群落: %s",
+  "cobblemonmarks.tooltip.condition.time": "时间: %s%s%s",
+  "cobblemonmarks.tooltip.condition.level.stronger": "对手比我们强",
+  "cobblemonmarks.tooltip.condition.level.range": "对手等级: %s%s%s",
+  "cobblemonmarks.tooltip.condition.level.exact": "对手等级: %s",
+  "cobblemonmarks.tooltip.condition.dimension": "维度: %s",
+  "cobblemonmarks.tooltip.condition.status": "我方宝可梦状态: %s",
+  "cobblemonmarks.tooltip.condition.size": "体型: %s",
+  "cobblemonmarks.tooltip.condition.friendship": "亲密度 ≥ %s",
+  "cobblemonmarks.tooltip.condition.shiny": "在战斗中捕获一只异色宝可梦",
+  "cobblemonmarks.tooltip.condition.battle_turns": "在%s回合内获胜",
+  "cobblemonmarks.tooltip.condition.form": "宝可梦形态: %s",
+
+  "cobblemonmarks.weather.rain": "雨天",
+  "cobblemonmarks.weather.thunder": "雷雨",
+  "cobblemonmarks.weather.snow": "降雪",
+  "cobblemonmarks.weather.clear": "晴天",
+
+  "cobblemonmarks.size.xxxs": "XXXS",
+  "cobblemonmarks.size.xxs": "XXS",
+  "cobblemonmarks.size.xs": "XS",
+  "cobblemonmarks.size.s": "S",
+  "cobblemonmarks.size.m": "M",
+  "cobblemonmarks.size.l": "L",
+  "cobblemonmarks.size.xl": "XL",
+  "cobblemonmarks.size.xxl": "XXL",
+  "cobblemonmarks.size.xxxl": "XXXL",
+
+  "cobblemonmarks.message.progress": "[%s] %s/%s",
+  "cobblemonmarks.message.streak_lost": "[%s] 连胜中断！0/%s",
+  "cobblemonmarks.message.mark_obtained": "✨ %s获得了新徽记：%s！"
+}
