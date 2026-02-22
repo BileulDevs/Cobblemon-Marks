@@ -6,6 +6,7 @@ import dev.darcosse.forge.cobblemonmarks.network.NeoForgeNetworkHandler;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.neoforged.fml.loading.FMLPaths;
 import net.neoforged.neoforge.network.PacketDistributor;
 
 /**
@@ -16,20 +17,9 @@ import net.neoforged.neoforge.network.PacketDistributor;
 public class CobblemonMarksNeoForgeMod {
 
     public CobblemonMarksNeoForgeMod(IEventBus modBus) {
-        // Register setup lifecycle
-        modBus.addListener(this::commonSetup);
-
-        // Register network payloads
+        CobblemonMarksMod.loadConfig(FMLPaths.CONFIGDIR.get());
+        CobblemonMarksMod.init();
         modBus.addListener(NeoForgeNetworkHandler::register);
-    }
-
-    private void commonSetup(FMLCommonSetupEvent event) {
-        event.enqueueWork(() -> {
-            // Initialize common mod logic
-            CobblemonMarksMod.init();
-
-            // Link common PacketSender to NeoForge's PacketDistributor
-            PacketSender.setImpl(PacketDistributor::sendToPlayer);
-        });
+        PacketSender.setImpl(PacketDistributor::sendToPlayer);
     }
 }
