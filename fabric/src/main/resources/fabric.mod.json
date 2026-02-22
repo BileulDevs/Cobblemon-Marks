@@ -3,12 +3,12 @@
   "id": "cobblemonmarks",
   "version": "${version}",
   "name": "Cobblemon Marks",
-  "description": "A Cobblemon addon to farm marks",
+  "description": "A Cobblemon addon that lets you farm Marks by completing configurable objectives.",
   "authors": [
     "Darcosse"
   ],
-  "license": "MIT License",
-  "icon": "assets/example/icon.png",
+  "license": "MIT",
+  "icon": "assets/cobblemonmarks/icon.png",
   "environment": "*",
   "entrypoints": {
     "main": [

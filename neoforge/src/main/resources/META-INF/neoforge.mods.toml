@@ -1,17 +1,20 @@
 modLoader = "javafml"
 loaderVersion = "[1,)"
-#issueTrackerURL = "A valid URL to your issue tracker where people can open bug tickets"
-license = "MIT License"
+license = "MIT"
+#issueTrackerURL = "https://github.com/TonPseudo/Cobblemon-Marks/issues"
 
 [[mods]]
 modId = "cobblemonmarks"
 version = "${version}"
-displayName = "Cobblemon Multiplatform-NeoForge Template Sidemod"
-authors = "Me!"
+displayName = "Cobblemon Marks"
+authors = "Darcosse"
 description = '''
-A very cool multi-line description!
+A Cobblemon addon that adds a mark farming system.
+Complete configurable objectives like defeating specific types, fishing,
+or battling in specific weather conditions to unlock Marks for your Pokémon.
+Includes real-time progress tracking in the summary screen!
 '''
-#logoFile = ""
+#logoFile = "icon.png"
 
 [[dependencies.cobblemonmarks]]
 modId = "minecraft"
@@ -23,7 +26,7 @@ side = "BOTH"
 [[dependencies.cobblemonmarks]]
 modId = "neoforge"
 mandatory = true
-versionRange = "[21.1.182,)"
+versionRange = "[21.1.0,)"
 ordering = "NONE"
 side = "BOTH"
 
