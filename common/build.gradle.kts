@@ -9,6 +9,10 @@ architectury {
 
 loom {
     silentMojangMappingsLicense()
+    mixin {
+        // On fixe un nom clair
+        defaultRefmapName.set("cobblemonmarks-refmap.json")
+    }
 }
 
 dependencies {
@@ -19,6 +23,7 @@ dependencies {
     implementation("com.google.code.gson:gson:2.10.1")
 
     compileOnly("org.spongepowered:mixin:0.8.5")
+    annotationProcessor("org.spongepowered:mixin:0.8.5:processor")
 
     testImplementation("org.junit.jupiter:junit-jupiter-api:${property("junit_version")}")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:${property("junit_version")}")

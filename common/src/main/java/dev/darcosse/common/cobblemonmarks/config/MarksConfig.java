@@ -458,7 +458,7 @@ public class MarksConfig {
 
             new MarksCondition(ZONED_OUT,
                     new Conditions(
-                            new KillCondition(150, List.of("psychic"), List.of(), NBT_PREFIX + "zonedout_kills"),
+                            new KillCondition(150, List.of("psychic", "fairy"), List.of(), NBT_PREFIX + "zonedout_kills"),
                             List.of(new TimeCondition(13702, 22299))
                     )
             )

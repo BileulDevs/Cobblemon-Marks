@@ -2,6 +2,7 @@
   "required": true,
   "minVersion": "0.8",
   "package": "dev.darcosse.common.cobblemonmarks.mixin",
+  "refmap": "cobblemonmarks-refmap.json",
   "compatibilityLevel": "JAVA_21",
   "client": [
     "MixinMarksWidget",
