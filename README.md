@@ -15,6 +15,7 @@ CobblemonMarks adds a **mark farming system** to Cobblemon. Each mark can be con
 - 🏷️ **Lock/unlock system** — locked marks appear grayed out in the summary screen
 - 📊 **Real-time progress** — objectives sync from server to client instantly
 - 🎯 **Fully configurable** — define conditions for any mark via JSON
+- 🔒 **Duplicate protection** — if the same mark appears twice in the config, only the first entry is kept
 - 🌍 **Multilingual** — supported languages: `en_us`, `fr_fr`, `de_de`, `es_es`, `pt_br`, `ja_jp`, `zh_cn`
 - ⚙️ **Multi-loader** — supports both **Fabric** and **NeoForge** (via Architectury)
 
@@ -22,35 +23,46 @@ CobblemonMarks adds a **mark farming system** to Cobblemon. Each mark can be con
 
 ## 🧩 Condition Types
 
-| Condition | Description |
-|-----------|-------------|
-| `KillCondition` | Defeat a number of Pokémon (with optional type/species filters) |
-| `FishingKillCondition` | Defeat Pokémon caught by fishing |
-| `FormKillCondition` | Defeat Pokémon of a specific form |
-| `StreakCondition` | Win battles in a row without fainting |
-| `CatchCondition` | Catch Pokémon in battle |
-| `DeathCondition` | Faint a number of times |
-| `WeatherCondition` | Require specific weather (Rain, Thunder, Snow, Clear) |
-| `TimeCondition` | Require a specific in-game time range |
-| `BiomeCondition` | Require a specific biome |
-| `LevelCondition` | Require a specific opponent level range |
-| `SizeCondition` | Require a specific Pokémon size (XXXS → XXXL) |
-| `DimensionCondition` | Require a specific dimension |
-| `StatusCondition` | Require a specific status condition |
-| `FriendshipCondition` | Require a minimum friendship level |
-| `ShinyCondition` | Require catching a shiny Pokémon in battle |
-| `TimeOfBattleCondition` | Win within a certain number of turns |
+### Main condition (`condition`)
 
-Conditions can be set as **required** (✔) or **excluded** (✘).
+The `condition` field defines the primary objective — it tracks progress and determines when the mark is awarded.
+
+| Type | Description |
+|------|-------------|
+| `KILL` | Defeat a number of Pokémon (with optional type/species filters) |
+| `FISHING_KILL` | Defeat Pokémon caught by fishing |
+| `FORM_KILL` | Defeat Pokémon of a specific form (e.g. `alolan`, `mega`) |
+| `STREAK` | Win battles in a row without fainting |
+| `CATCH` | Catch Pokémon in battle |
+| `DEATH` | Faint a number of times |
+
+### Additional conditions (`required` / `excluded`)
+
+These conditions filter when progress can be made. `required` conditions must all be met, `excluded` conditions must not be met.
+
+| Type | Description |
+|------|-------------|
+| `WEATHER` | Specific weather (`CLEAR`, `RAIN`, `THUNDER`, `SNOW`) |
+| `TIME` | In-game time range (in ticks, 0–24000) |
+| `TIME_OF_BATTLE` | Win within a number of turns |
+| `BIOME` | Specific biome or biome tag |
+| `LEVEL` | Opponent level range |
+| `SIZE` | Pokémon size (`XXXS` → `XXXL`) |
+| `DIMENSION` | Specific dimension |
+| `STATUS` | Status condition on your Pokémon |
+| `FRIENDSHIP` | Minimum friendship level |
+| `SHINY` | Target must be shiny (used with `CATCH`) |
 
 ---
 
 ## 🗂️ Configuration
 
-Place your mark configurations in:
+A default `conditions.json` is generated on first launch at:
 ```
-config/cobblemonmarks/marks.json
+config/cobblemonmarks/conditions.json
 ```
+
+You can edit it freely. On next launch, the mod will load your custom configuration. If a `markIdentifier` appears more than once, only the first entry is kept.
 
 ### Example
 
@@ -59,20 +71,48 @@ config/cobblemonmarks/marks.json
   {
     "markIdentifier": "cobblemon:mark_time_lunchtime",
     "conditions": {
-      "killCondition": {
-        "type": "kill",
-        "requiredCount": 100,
-        "requiredTypes": ["normal"],
+      "condition": {
+        "type": "KILL",
+        "requiredKills": 100,
+        "requiredTypes": [],
         "requiredSpecies": [],
-        "nbtKey": "cobblemonmarks_lunchtime_kills"
+        "nbtKey": "markfarm_lunchtime_kills"
       },
       "required": [
         {
-          "type": "time",
+          "type": "TIME",
           "minTime": 6000,
-          "maxTime": 12000
+          "maxTime": 11833
         }
       ],
+      "excluded": []
+    }
+  },
+  {
+    "markIdentifier": "cobblemon:mark_rare",
+    "conditions": {
+      "condition": {
+        "type": "CATCH",
+        "requiredCount": 3,
+        "nbtKey": "markfarm_rare_shiny_captures"
+      },
+      "required": [
+        {
+          "type": "SHINY"
+        }
+      ],
+      "excluded": []
+    }
+  },
+  {
+    "markIdentifier": "cobblemon:mark_personality_pumped-up",
+    "conditions": {
+      "condition": {
+        "type": "STREAK",
+        "requiredStreak": 50,
+        "nbtKey": "markfarm_pumpedup_streak"
+      },
+      "required": [],
       "excluded": []
     }
   }
@@ -83,13 +123,12 @@ config/cobblemonmarks/marks.json
 
 ## 🖥️ In-game UI
 
-When hovering over a locked mark in the Pokémon summary screen:
-
+When hovering over a **locked mark** in the Pokémon summary screen:
 - 🔒 The mark name and title are displayed
 - 📊 Current progress is shown (e.g. `Progress: 12/100`)
 - 📋 All conditions are listed with their respective icons and colors
 
-When hovering over an **already obtained** mark:
+When hovering over an **already obtained mark**:
 - The mark title is displayed in italic with its own color
 - Conditions and progress are still shown for reference
 
@@ -136,7 +175,7 @@ fabric/   → Fabric entrypoints and network handler
 neoforge/ → NeoForge entrypoints and network handler
 ```
 
-Progress synchronization uses a custom `S2C` packet (`SyncMarkProgressPayload`) that sends the Pokémon's full progress map to the client whenever a counter is incremented.
+Progress synchronization uses a custom `S2C` packet (`SyncMarkProgressPayload`) that sends the Pokémon's full progress map to the client whenever a counter is incremented, ensuring the tooltip always reflects the latest state without needing to reopen the summary screen.
 
 ---
 
