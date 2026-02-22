@@ -17,7 +17,7 @@ public class MarkConditionDescriber {
     private static final int YELLOW = 0xFFAA00;
     private static final int CYAN   = 0x55FFFF;
 
-    private static final String defeatEmoji = "🔴";
+    private static final String defeatEmoji = "☠ ";
 
     private static MutableComponent white(String text) { return Component.literal(text).withStyle(s -> s.withColor(WHITE)); }
     private static MutableComponent gray(String text)  { return Component.literal(text).withStyle(s -> s.withColor(GRAY)); }
