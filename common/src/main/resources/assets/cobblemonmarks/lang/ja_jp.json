@@ -42,6 +42,6 @@
   "cobblemonmarks.size.xxxl": "XXXL",
 
   "cobblemonmarks.message.progress": "[%s] %s/%s",
-  "cobblemonmarks.message.streak_lost": "[%s] 連勝が途切れた！ 0/%s",
+  "cobblemonmarks.message.streak_lost": "[%s] 連勝が途切れた！ %s/%s",
   "cobblemonmarks.message.mark_obtained": "✨ %sが新しいマークを獲得: %s!"
 }

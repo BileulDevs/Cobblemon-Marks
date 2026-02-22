@@ -150,12 +150,12 @@ public class MarksHandler {
 
             // Reset streak if the Pokémon faints
             if (mainCond instanceof StreakCondition sc) {
-                int current = faintedPokemon.getPersistentData().getInt(sc.getNbtKey());
-                if (current > 0) {
+                int currentStreak = faintedPokemon.getPersistentData().getInt(sc.getNbtKey());
+                if (currentStreak > 0) {
                     faintedPokemon.getPersistentData().remove(sc.getNbtKey());
                     player.sendSystemMessage(Component.translatable("cobblemonmarks.message.streak_lost",
                             pokemonName(faintedPokemon),
-                            Component.literal("0").withStyle(s -> s.withColor(0xFFFFFF)),
+                            Component.literal(String.valueOf(currentStreak)).withStyle(s -> s.withColor(0xFFFFFF)),
                             Component.literal(String.valueOf(sc.getRequiredCount())).withStyle(s -> s.withColor(0xFFFFFF))
                     ).withStyle(s -> s.withColor(0xFF5555)));
                 }

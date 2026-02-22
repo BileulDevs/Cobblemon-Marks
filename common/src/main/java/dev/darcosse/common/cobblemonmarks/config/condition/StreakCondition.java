@@ -34,4 +34,14 @@ public class StreakCondition extends KillCondition {
     public boolean isMet(Pokemon triggerPokemon, Pokemon targetPokemon, ServerPlayer player) {
         return true;
     }
+
+    /**
+     * Since this class extends KillCondition, it uses the 'requiredKills' field
+     * to store the target streak value.
+     * * @return The total number of kills/wins required to complete the streak.
+     */
+    @Override
+    public int getRequiredCount() {
+        return this.requiredKills;
+    }
 }

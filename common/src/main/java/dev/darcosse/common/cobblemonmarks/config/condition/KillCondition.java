@@ -16,10 +16,10 @@ import java.util.List;
  */
 public class KillCondition implements MarkCondition {
 
-    private final int requiredKills;
-    private final List<String> requiredTypes;
-    private final List<String> requiredSpecies;
-    private final String nbtKey;
+    protected final int requiredKills;
+    protected final List<String> requiredTypes;
+    protected final List<String> requiredSpecies;
+    protected final String nbtKey;
 
     /**
      * Constructs a KillCondition with filtering parameters and progress tracking.

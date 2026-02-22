@@ -42,6 +42,6 @@
   "cobblemonmarks.size.xxxl": "XXXL",
 
   "cobblemonmarks.message.progress": "[%s] %s/%s",
-  "cobblemonmarks.message.streak_lost": "[%s] Série perdue ! 0/%s",
+  "cobblemonmarks.message.streak_lost": "[%s] Série perdue ! %s/%s",
   "cobblemonmarks.message.mark_obtained": "✨ %s a obtenu une nouvelle marque : %s !"
 }

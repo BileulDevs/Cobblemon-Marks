@@ -42,6 +42,6 @@
   "cobblemonmarks.size.xxxl": "XXXL",
 
   "cobblemonmarks.message.progress": "[%s] %s/%s",
-  "cobblemonmarks.message.streak_lost": "[%s] 连胜中断！0/%s",
+  "cobblemonmarks.message.streak_lost": "[%s] 连胜中断！%s/%s",
   "cobblemonmarks.message.mark_obtained": "✨ %s获得了新徽记：%s！"
 }
