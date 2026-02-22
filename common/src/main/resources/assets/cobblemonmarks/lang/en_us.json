@@ -1,27 +1,39 @@
 {
-  "cobblemonmarks.tooltip.progress": "Progress: %s/%s",
+  "cobblemonmarks.tooltip.progress": "Progress: %s%s%s",
+  "cobblemonmarks.tooltip.ko": "K.O: %s%s%s",
+
   "cobblemonmarks.tooltip.kill.any": "Defeat %s Pokémon",
-  "cobblemonmarks.tooltip.kill.type": "Defeat %s %s-type Pokémon",
-  "cobblemonmarks.tooltip.kill.species": "Defeat %s of: %s",
-  "cobblemonmarks.tooltip.kill.type_species": "Defeat %s %s-type Pokémon (%s)",
-  "cobblemonmarks.tooltip.kill.streak": "Win %s battles in a row without fainting",
+  "cobblemonmarks.tooltip.kill.type": "Defeat %s %s type Pokémon",
+  "cobblemonmarks.tooltip.kill.species_header": "Defeat %s Pokémon among:",
+  "cobblemonmarks.tooltip.kill.type_species_header": "Defeat %s %s type Pokémon among:",
   "cobblemonmarks.tooltip.kill.fishing": "Defeat %s fished Pokémon",
+  "cobblemonmarks.tooltip.kill.streak": "Win %s battles in a row without fainting",
+
   "cobblemonmarks.tooltip.condition.weather": "Weather: %s",
   "cobblemonmarks.tooltip.condition.biome": "Biome: %s",
   "cobblemonmarks.tooltip.condition.time": "Time: %s - %s",
   "cobblemonmarks.tooltip.condition.level.stronger": "Opponent stronger than us",
   "cobblemonmarks.tooltip.condition.level.range": "Opponent level: %s-%s",
+  "cobblemonmarks.tooltip.condition.level.exact": "Opponent level: %s",
   "cobblemonmarks.tooltip.condition.dimension": "Dimension: %s",
   "cobblemonmarks.tooltip.condition.status": "Opponent status: %s",
   "cobblemonmarks.tooltip.condition.size": "Size: %s",
   "cobblemonmarks.tooltip.condition.friendship": "Friendship ≥ %s",
   "cobblemonmarks.tooltip.condition.shiny": "Catch a shiny Pokémon in battle",
+  "cobblemonmarks.tooltip.condition.battle_turns": "Battle must last %s turn.s",
+
   "cobblemonmarks.weather.rain": "Rain",
   "cobblemonmarks.weather.thunder": "Thunder",
   "cobblemonmarks.weather.snow": "Snow",
   "cobblemonmarks.weather.clear": "Clear",
-  "cobblemonmarks.size.small": "Small",
-  "cobblemonmarks.size.normal": "Normal",
-  "cobblemonmarks.size.large": "Large",
-  "cobblemonmarks.size.jumbo": "Jumbo"
+
+  "cobblemonmarks.size.xxxs": "XXXS",
+  "cobblemonmarks.size.xxs": "XXS",
+  "cobblemonmarks.size.xs": "XS",
+  "cobblemonmarks.size.s": "S",
+  "cobblemonmarks.size.m": "M",
+  "cobblemonmarks.size.l": "L",
+  "cobblemonmarks.size.xl": "XL",
+  "cobblemonmarks.size.xxl": "XXL",
+  "cobblemonmarks.size.xxxl": "XXXL"
 }

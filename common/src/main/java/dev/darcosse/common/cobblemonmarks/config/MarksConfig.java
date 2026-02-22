@@ -289,7 +289,7 @@ public class MarksConfig {
             new MarksCondition(FEROCIOUS,
                     new Conditions(
                             new KillCondition(150, List.of(), List.of(), NBT_PREFIX + "ferocious_kills"),
-                            List.of(new LevelCondition(50, null))
+                            List.of(new LevelCondition(50, 100))
                     )
             ),
 
@@ -387,7 +387,7 @@ public class MarksConfig {
             // Slump Mark (the Worn-Out) — Notre pokémon meurt 30 fois
             new MarksCondition(SLUMP,
                     new Conditions(List.of(
-                            new DeathCondition(30, NBT_PREFIX + "slump_deaths")
+                            new DeathCondition(40, NBT_PREFIX + "slump_deaths")
                     ))
             ),
 
@@ -437,7 +437,7 @@ public class MarksConfig {
             // Zero Energy Mark (the Apathetic) — Notre pokémon meurt 100 fois
             new MarksCondition(ZERO_ENERGY,
                     new Conditions(List.of(
-                            new DeathCondition(100, NBT_PREFIX + "zeroenergy_deaths")
+                            new DeathCondition(75, NBT_PREFIX + "zeroenergy_deaths")
                     ))
             ),
 
