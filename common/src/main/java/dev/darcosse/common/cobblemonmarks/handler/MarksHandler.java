@@ -17,6 +17,7 @@ import dev.darcosse.common.cobblemonmarks.config.MarksCondition;
 import dev.darcosse.common.cobblemonmarks.config.MarksConfig;
 import dev.darcosse.common.cobblemonmarks.config.condition.*;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 
@@ -32,9 +33,7 @@ public class MarksHandler {
             handleBattleStarted(event.getBattle());
         });
 
-        CobblemonEvents.FRIENDSHIP_UPDATED.subscribe(event -> {
-            handleFriendshipUpdated(event);
-        });
+        CobblemonEvents.FRIENDSHIP_UPDATED.subscribe(MarksHandler::handleFriendshipUpdated);
 
         CobblemonEvents.BATTLE_VICTORY.subscribe(event -> {
             handleBattleVictory(event.getBattle());
@@ -88,6 +87,8 @@ public class MarksHandler {
 
         if (!defeatedPokemons.isEmpty()) {
             for (Pokemon defeated : defeatedPokemons) {
+                if (defeated.getOwnerUUID() != null) continue;
+
                 for (MarksCondition markCondition : MarksConfig.CONDITIONS) {
                     if (shouldSkipBattleVictory(markCondition)) continue;
                     if (hasMark(killerPokemon, markCondition)) continue;
@@ -96,7 +97,6 @@ public class MarksHandler {
             }
         }
 
-        // Nettoyer
         killerPokemon.getPersistentData().remove(TimeOfBattleCondition.TURN_COUNT_KEY);
         clearBattleFlag(battle);
     }
@@ -120,21 +120,21 @@ public class MarksHandler {
         for (MarksCondition markCondition : MarksConfig.CONDITIONS) {
             if (hasMark(faintedPokemon, markCondition)) continue;
 
-            // Reset streak si dans le slot killCondition
-            KillCondition killCond = markCondition.getConditions().getKillCondition();
-            if (killCond instanceof StreakCondition) {
-                int current = faintedPokemon.getPersistentData().getInt(killCond.getNbtKey());
+            MarkCondition killCond = markCondition.getConditions().getKillCondition();
+            if (killCond instanceof StreakCondition sc) {
+                int current = faintedPokemon.getPersistentData().getInt(sc.getNbtKey());
                 if (current > 0) {
-                    faintedPokemon.getPersistentData().remove(killCond.getNbtKey());
+                    faintedPokemon.getPersistentData().remove(sc.getNbtKey());
                     player.sendSystemMessage(
-                            Component.literal("§c[" + faintedPokemon.getSpecies().getName()
-                                    + "] Streak perdu ! (0/" + killCond.getRequiredCount() + ")"),
-                            true
+                            Component.translatable("cobblemonmarks.message.streak_lost",
+                                    pokemonName(faintedPokemon),
+                                    Component.literal("0").withStyle(s -> s.withColor(0xFFFFFF)),
+                                    Component.literal(String.valueOf(sc.getRequiredCount())).withStyle(s -> s.withColor(0xFFFFFF))
+                            ).withStyle(s -> s.withColor(0xFF5555))
                     );
                 }
             }
 
-            // Death conditions dans required
             for (MarkCondition condition : markCondition.getConditions().getRequired()) {
                 if (condition instanceof DeathCondition) {
                     processCounter(faintedPokemon, condition, markCondition, null, player);
@@ -144,10 +144,8 @@ public class MarksHandler {
     }
 
     private static void handleCapture(PokemonCapturedEvent event) {
-        if (!event.getPokemon().getShiny()) return;
         ServerPlayer player = event.getPlayer();
 
-        // Chercher le pokémon actif en combat PvW via le flag
         var party = Cobblemon.INSTANCE.getStorage().getParty(player);
         Pokemon activePokemon = null;
         for (Pokemon p : party) {
@@ -161,14 +159,31 @@ public class MarksHandler {
         for (MarksCondition markCondition : MarksConfig.CONDITIONS) {
             if (hasMark(activePokemon, markCondition)) continue;
 
-            KillCondition killCond = markCondition.getConditions().getKillCondition();
-            if (killCond == null) continue;
+            MarkCondition killCond = markCondition.getConditions().getKillCondition();
+            if (!(killCond instanceof CatchCondition)) continue;
 
-            boolean hasShinyCondition = false;
+            boolean hasShiny = markCondition.getConditions().getRequired()
+                    .stream().anyMatch(c -> c instanceof ShinyCondition);
+
+            if (hasShiny && !event.getPokemon().getShiny()) continue;
+
+            boolean conditionsMet = true;
             for (MarkCondition c : markCondition.getConditions().getRequired()) {
-                if (c instanceof ShinyCondition) { hasShinyCondition = true; break; }
+                if (c instanceof ShinyCondition) continue;
+                if (!c.isMet(activePokemon, event.getPokemon(), player)) {
+                    conditionsMet = false;
+                    break;
+                }
             }
-            if (!hasShinyCondition) continue;
+            if (!conditionsMet) continue;
+
+            for (MarkCondition c : markCondition.getConditions().getExcluded()) {
+                if (c.isMet(activePokemon, event.getPokemon(), player)) {
+                    conditionsMet = false;
+                    break;
+                }
+            }
+            if (!conditionsMet) continue;
 
             processCounter(activePokemon, killCond, markCondition, null, player);
         }
@@ -178,10 +193,7 @@ public class MarksHandler {
         Pokemon pokemon = event.getPokemon();
         if (pokemon == null) return;
 
-        // Récupérer le joueur propriétaire du pokémon
-        var storage = Cobblemon.INSTANCE.getStorage();
         ServerPlayer player = null;
-        // À adapter selon l'API disponible sur l'event
         if (event.getPokemon().getOwnerEntity() instanceof ServerPlayer sp) {
             player = sp;
         }
@@ -190,7 +202,6 @@ public class MarksHandler {
         for (MarksCondition markCondition : MarksConfig.CONDITIONS) {
             if (hasMark(pokemon, markCondition)) continue;
 
-            // Vérifier si la mark a une FriendshipCondition dans required sans KillCondition
             Conditions conditions = markCondition.getConditions();
             if (conditions.getKillCondition() != null) continue;
 
@@ -214,25 +225,21 @@ public class MarksHandler {
     private static void evaluateAndProcess(MarksCondition markCondition, Pokemon killer,
                                            Pokemon defeated, ServerPlayer player) {
         Conditions conditions = markCondition.getConditions();
-        KillCondition killCond = conditions.getKillCondition();
+        MarkCondition killCond = conditions.getKillCondition();
 
-        // Vérifier les conditions requises
         for (MarkCondition c : conditions.getRequired()) {
             if (!c.isMet(killer, defeated, player)) return;
         }
 
-        // Vérifier les conditions exclues — si l'une est vraie on abandonne
         for (MarkCondition c : conditions.getExcluded()) {
             if (c.isMet(killer, defeated, player)) return;
         }
 
-        // Vérifier le filtre type/species/fishing de la KillCondition
         if (killCond != null && !killCond.isMet(killer, defeated, player)) return;
 
         if (killCond != null) {
             processCounter(killer, killCond, markCondition, defeated, player);
         } else {
-            // Mode instantané : WeatherCondition, BiomeCondition, FriendshipCondition...
             awardMark(killer, markCondition, player);
         }
     }
@@ -244,14 +251,6 @@ public class MarksHandler {
         int currentCount = tag.getInt(condition.getNbtKey()) + 1;
         tag.putInt(condition.getNbtKey(), currentCount);
         int required = condition.getRequiredCount();
-
-        if (currentCount % 10 == 0 || currentCount == required) {
-            player.sendSystemMessage(
-                    Component.literal("§6[" + pokemon.getSpecies().getName() + "] §e"
-                            + currentCount + "/" + required),
-                    true
-            );
-        }
 
         if (currentCount >= required) {
             tag.remove(condition.getNbtKey());
@@ -273,17 +272,23 @@ public class MarksHandler {
 
         pokemon.exchangeMark(mark, true);
 
-        String name = pokemon.getNickname() != null
-                ? pokemon.getNickname().getString()
-                : pokemon.getSpecies().getName();
-
+        String markName = mark.getSerializedName().replace("cobblemon:", "");
         player.sendSystemMessage(
-                Component.literal("§a✨ " + name
-                        + " a obtenu une nouvelle marque §a!")
+                Component.translatable("cobblemonmarks.message.mark_obtained",
+                        pokemonName(pokemon),
+                        Component.translatable("cobblemon.mark." + markName).withStyle(s -> s.withColor(0x55FF55))
+                ).withStyle(s -> s.withColor(0x55FF55))
         );
     }
 
     // -------------------------------------------------------------------------
+
+    private static MutableComponent pokemonName(Pokemon pokemon) {
+        String name = pokemon.getNickname() != null
+                ? pokemon.getNickname().getString()
+                : pokemon.getSpecies().getName();
+        return Component.literal(name).withStyle(s -> s.withColor(0xFFAA00));
+    }
 
     private static boolean hasMark(Pokemon pokemon, MarksCondition markCondition) {
         String rawPath = markCondition.getMarkIdentifier().replace("cobblemon:", "");
@@ -295,12 +300,8 @@ public class MarksHandler {
     private static boolean shouldSkipBattleVictory(MarksCondition markCondition) {
         Conditions conditions = markCondition.getConditions();
 
-        // ShinyCondition dans required → géré par handleCapture
-        for (MarkCondition c : conditions.getRequired()) {
-            if (c instanceof ShinyCondition) return true;
-        }
+        if (conditions.getKillCondition() instanceof CatchCondition) return true;
 
-        // Pas de KillCondition → vérifier si que des Death
         if (conditions.getKillCondition() != null) return false;
         for (MarkCondition c : conditions.getRequired()) {
             if (!(c instanceof DeathCondition)) return false;

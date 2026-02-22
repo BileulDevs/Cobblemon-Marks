@@ -4,23 +4,24 @@ import com.cobblemon.mod.common.api.pokemon.PokemonSpecies;
 import com.cobblemon.mod.common.pokemon.Pokemon;
 import dev.darcosse.common.cobblemonmarks.config.MarksCondition;
 import dev.darcosse.common.cobblemonmarks.config.condition.*;
-import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
+
 import java.util.ArrayList;
 import java.util.List;
 
 public class MarkConditionDescriber {
 
-    private static final int WHITE   = 0xFFFFFF;
-    private static final int GRAY    = 0xAAAAAA;
-    private static final int YELLOW  = 0xFFAA00;
-    private static final int CYAN    = 0x55FFFF;
-    private static final int GOLD    = 0xFFAA00;
+    private static final int WHITE  = 0xFFFFFF;
+    private static final int GRAY   = 0xAAAAAA;
+    private static final int YELLOW = 0xFFAA00;
+    private static final int CYAN   = 0x55FFFF;
 
-    private static MutableComponent white(String text)  { return Component.literal(text).withStyle(s -> s.withColor(WHITE)); }
-    private static MutableComponent gray(String text)   { return Component.literal(text).withStyle(s -> s.withColor(GRAY)); }
-    private static MutableComponent cyan(String text)   { return Component.literal(text).withStyle(s -> s.withColor(CYAN)); }
+    private static final String defeatEmoji = "🔴";
+
+    private static MutableComponent white(String text) { return Component.literal(text).withStyle(s -> s.withColor(WHITE)); }
+    private static MutableComponent gray(String text)  { return Component.literal(text).withStyle(s -> s.withColor(GRAY)); }
+    private static MutableComponent cyan(String text)  { return Component.literal(text).withStyle(s -> s.withColor(CYAN)); }
 
     private static int getTypeColorInt(String type) {
         return switch (type.toLowerCase()) {
@@ -69,8 +70,9 @@ public class MarkConditionDescriber {
     public static List<Component> describe(MarksCondition markCondition, Pokemon pokemon) {
         List<Component> lines = new ArrayList<>();
         var conditions = markCondition.getConditions();
-        KillCondition killCond = conditions.getKillCondition();
+        MarkCondition killCond = conditions.getKillCondition();
 
+        // Progression
         if (killCond != null) {
             int current = pokemon.getPersistentData().getInt(killCond.getNbtKey());
             int required = killCond.getRequiredCount();
@@ -81,86 +83,67 @@ public class MarkConditionDescriber {
             ).withStyle(s -> s.withColor(YELLOW)));
         }
 
+        // Description du slot killCondition
         if (killCond instanceof StreakCondition) {
             lines.add(Component.literal("🔥 ").withStyle(s -> s.withColor(0xFF6600))
                     .append(Component.translatable("cobblemonmarks.tooltip.kill.streak",
                             white(String.valueOf(killCond.getRequiredCount()))
                     ).withStyle(s -> s.withColor(GRAY))));
+
         } else if (killCond instanceof FishingKillCondition) {
-            lines.add(Component.translatable("cobblemonmarks.tooltip.kill.fishing",
-                    white(String.valueOf(killCond.getRequiredCount()))
-            ).withStyle(s -> s.withColor(GRAY)));
-        } else if (killCond != null) {
-            List<String> translatedSpecies = killCond.getRequiredSpecies().stream()
-                    .map(s -> Component.translatable("cobblemon.species." + s.toLowerCase() + ".name").getString())
-                    .toList();
+            lines.add(Component.literal(defeatEmoji).withStyle(s -> s.withColor(0xFFAA00))
+                    .append(Component.translatable("cobblemonmarks.tooltip.kill.fishing",
+                            white(String.valueOf(killCond.getRequiredCount()))
+                    ).withStyle(s -> s.withColor(GRAY))));
 
-            // Types colorés assemblés en un seul Component
-            MutableComponent coloredTypes = killCond.getRequiredTypes().stream()
-                    .map(t -> (MutableComponent) Component.literal(t).withStyle(s -> s.withColor(getTypeColorInt(t))))
-                    .reduce((a, b) -> a.append(gray("/")).append(b))
-                    .orElse(Component.literal(""));
+        } else if (killCond instanceof FormKillCondition fkc) {
+            MutableComponent forms = fkc.getRequiredForms().stream()
+                    .map(f -> (MutableComponent) Component.literal(f).withStyle(s -> s.withColor(CYAN)))
+                    .reduce((a, b) -> a.append(gray(", ")).append(b))
+                    .orElse(Component.literal("?"));
+            lines.add(Component.literal(defeatEmoji).withStyle(s -> s.withColor(0xFFAA00))
+                    .append(Component.translatable("cobblemonmarks.tooltip.kill.form",
+                            white(String.valueOf(killCond.getRequiredCount())), forms
+                    ).withStyle(s -> s.withColor(GRAY))));
 
-            if (!killCond.getRequiredTypes().isEmpty() && !killCond.getRequiredSpecies().isEmpty()) {
-                lines.add(Component.translatable("cobblemonmarks.tooltip.kill.type_species_header",
-                        white(String.valueOf(killCond.getRequiredCount())), coloredTypes
-                ).withStyle(s -> s.withColor(GRAY)));
-                for (int i = 0; i < translatedSpecies.size(); i += 4) {
-                    List<String> chunk = translatedSpecies.subList(i, Math.min(i + 4, translatedSpecies.size()));
-                    MutableComponent speciesLine = Component.literal("  ");
-                    for (int j = 0; j < chunk.size(); j++) {
-                        String originalName = killCond.getRequiredSpecies().get(i + j);
-                        String translated = chunk.get(j);
-                        int color = getSpeciesPrimaryTypeColor(originalName);
-                        speciesLine.append(Component.literal(translated).withStyle(s -> s.withColor(color)));
-                        if (j < chunk.size() - 1)
-                            speciesLine.append(Component.literal(", ").withStyle(s -> s.withColor(GRAY)));
-                    }
-                    lines.add(speciesLine);
-                }
-            } else if (!killCond.getRequiredTypes().isEmpty()) {
-                lines.add(Component.translatable("cobblemonmarks.tooltip.kill.type",
-                        white(String.valueOf(killCond.getRequiredCount())), coloredTypes
-                ).withStyle(s -> s.withColor(GRAY)));
-            } else if (!killCond.getRequiredSpecies().isEmpty()) {
-                lines.add(Component.translatable("cobblemonmarks.tooltip.kill.species_header",
-                        white(String.valueOf(killCond.getRequiredCount()))
-                ).withStyle(s -> s.withColor(GRAY)));
-                for (int i = 0; i < translatedSpecies.size(); i += 4) {
-                    List<String> chunk = translatedSpecies.subList(i, Math.min(i + 4, translatedSpecies.size()));
-                    MutableComponent speciesLine = Component.literal("  ");
-                    for (int j = 0; j < chunk.size(); j++) {
-                        String originalName = killCond.getRequiredSpecies().get(i + j);
-                        String translated = chunk.get(j);
-                        int color = getSpeciesPrimaryTypeColor(originalName);
-                        speciesLine.append(Component.literal(translated).withStyle(s -> s.withColor(color)));
-                        if (j < chunk.size() - 1)
-                            speciesLine.append(Component.literal(", ").withStyle(s -> s.withColor(GRAY)));
-                    }
-                    lines.add(speciesLine);
-                }
-            } else {
-                lines.add(Component.translatable("cobblemonmarks.tooltip.kill.any",
+        } else if (killCond instanceof CatchCondition) {
+            boolean hasShiny = conditions.getRequired().stream().anyMatch(c -> c instanceof ShinyCondition);
+            if (hasShiny) {
+                lines.add(Component.literal("🎯 ").withStyle(s -> s.withColor(0xFFAA00))
+                        .append(Component.translatable("cobblemonmarks.tooltip.kill.catch_shiny",
                                 white(String.valueOf(killCond.getRequiredCount()))
-                        ).withStyle(s -> s.withColor(GRAY)));
+                        ).withStyle(s -> s.withColor(GRAY))));
+            } else {
+                lines.add(Component.literal("🎯 ").withStyle(s -> s.withColor(0xFFAA00))
+                        .append(Component.translatable("cobblemonmarks.tooltip.kill.catch",
+                                white(String.valueOf(killCond.getRequiredCount()))
+                        ).withStyle(s -> s.withColor(GRAY))));
             }
+
+        } else if (killCond instanceof KillCondition kc) {
+            lines.addAll(describeKillCondition(kc));
         }
 
+        // Conditions required (sauf Death et ShinyCondition combinée à CatchCondition)
+        boolean killIsCatch = killCond instanceof CatchCondition;
         for (MarkCondition c : conditions.getRequired()) {
             if (c instanceof DeathCondition) continue;
+            if (c instanceof ShinyCondition && killIsCatch) continue;
             lines.add(Component.literal("✔ ").withStyle(s -> s.withColor(0x55FF55))
                     .append(describeCondition(c, 0x55FF55)));
         }
 
+        // Conditions excluded
         for (MarkCondition c : conditions.getExcluded()) {
             lines.add(Component.literal("✘ ").withStyle(s -> s.withColor(0xFF5555))
                     .append(describeCondition(c, 0xFF5555)));
         }
 
+        // Death condition — progression en tête
         for (MarkCondition c : conditions.getRequired()) {
             if (c instanceof DeathCondition dc) {
                 int current = pokemon.getPersistentData().getInt(dc.getNbtKey());
-                lines.add(0, Component.literal("\uD83E\uDEA6 ").withStyle(s -> s.withColor(WHITE))
+                lines.add(0, Component.literal("🪦 ").withStyle(s -> s.withColor(WHITE))
                         .append(Component.translatable("cobblemonmarks.tooltip.ko",
                                 white(String.valueOf(current)),
                                 gray("/"),
@@ -169,6 +152,67 @@ public class MarkConditionDescriber {
             }
         }
 
+        return lines;
+    }
+
+    private static List<Component> describeKillCondition(KillCondition killCond) {
+        List<Component> lines = new ArrayList<>();
+
+        List<String> translatedSpecies = killCond.getRequiredSpecies().stream()
+                .map(s -> Component.translatable("cobblemon.species." + s.toLowerCase() + ".name").getString())
+                .toList();
+
+        MutableComponent coloredTypes = killCond.getRequiredTypes().stream()
+                .map(t -> (MutableComponent) Component.literal(t).withStyle(s -> s.withColor(getTypeColorInt(t))))
+                .reduce((a, b) -> a.append(gray("/")).append(b))
+                .orElse(Component.literal(""));
+
+        MutableComponent punchEmoji = Component.literal(defeatEmoji).withStyle(s -> s.withColor(0xFFAA00));
+
+        if (!killCond.getRequiredTypes().isEmpty() && !killCond.getRequiredSpecies().isEmpty()) {
+            lines.add(punchEmoji.copy()
+                    .append(Component.translatable("cobblemonmarks.tooltip.kill.type_species_header",
+                            white(String.valueOf(killCond.getRequiredCount())), coloredTypes
+                    ).withStyle(s -> s.withColor(GRAY))));
+            lines.addAll(buildSpeciesLines(killCond.getRequiredSpecies(), translatedSpecies));
+
+        } else if (!killCond.getRequiredTypes().isEmpty()) {
+            lines.add(punchEmoji.copy()
+                    .append(Component.translatable("cobblemonmarks.tooltip.kill.type",
+                            white(String.valueOf(killCond.getRequiredCount())), coloredTypes
+                    ).withStyle(s -> s.withColor(GRAY))));
+
+        } else if (!killCond.getRequiredSpecies().isEmpty()) {
+            lines.add(punchEmoji.copy()
+                    .append(Component.translatable("cobblemonmarks.tooltip.kill.species_header",
+                            white(String.valueOf(killCond.getRequiredCount()))
+                    ).withStyle(s -> s.withColor(GRAY))));
+            lines.addAll(buildSpeciesLines(killCond.getRequiredSpecies(), translatedSpecies));
+
+        } else {
+            lines.add(punchEmoji.copy()
+                    .append(Component.translatable("cobblemonmarks.tooltip.kill.any",
+                            white(String.valueOf(killCond.getRequiredCount()))
+                    ).withStyle(s -> s.withColor(GRAY))));
+        }
+
+        return lines;
+    }
+
+    private static List<Component> buildSpeciesLines(List<String> originalNames, List<String> translated) {
+        List<Component> lines = new ArrayList<>();
+        for (int i = 0; i < translated.size(); i += 4) {
+            List<String> chunk = translated.subList(i, Math.min(i + 4, translated.size()));
+            MutableComponent line = Component.literal("  ");
+            for (int j = 0; j < chunk.size(); j++) {
+                String original = originalNames.get(i + j);
+                int color = getSpeciesPrimaryTypeColor(original);
+                line.append(Component.literal(chunk.get(j)).withStyle(s -> s.withColor(color)));
+                if (j < chunk.size() - 1)
+                    line.append(gray(", "));
+            }
+            lines.add(line);
+        }
         return lines;
     }
 
@@ -199,13 +243,19 @@ public class MarkConditionDescriber {
             if (lc.isMustBeStrongerThanKiller())
                 return Component.translatable("cobblemonmarks.tooltip.condition.level.stronger")
                         .withStyle(s -> s.withColor(labelColor));
-            String min = lc.getMinLevel() != null ? String.valueOf(lc.getMinLevel()) : "?";
-            String max = lc.getMaxLevel() != null ? String.valueOf(lc.getMaxLevel()) : "max";
-            if (min.equals(max)) {
-                return Component.translatable("cobblemonmarks.tooltip.condition.level.exact",
-                        cyan(min)
-                ).withStyle(s -> s.withColor(labelColor));
-            }
+            boolean hasMin = lc.getMinLevel() != null;
+            boolean hasMax = lc.getMaxLevel() != null;
+            String min = hasMin ? String.valueOf(lc.getMinLevel()) : "?";
+            String max = hasMax ? String.valueOf(lc.getMaxLevel()) : "max";
+            if (hasMin && hasMax && min.equals(max))
+                return Component.translatable("cobblemonmarks.tooltip.condition.level.exact", cyan(min))
+                        .withStyle(s -> s.withColor(labelColor));
+            if (hasMin && !hasMax)
+                return Component.translatable("cobblemonmarks.tooltip.condition.level.min", cyan(min))
+                        .withStyle(s -> s.withColor(labelColor));
+            if (!hasMin && hasMax)
+                return Component.translatable("cobblemonmarks.tooltip.condition.level.max", cyan(max))
+                        .withStyle(s -> s.withColor(labelColor));
             return Component.translatable("cobblemonmarks.tooltip.condition.level.range",
                     cyan(min),
                     Component.literal("-").withStyle(s -> s.withColor(labelColor)),
@@ -248,6 +298,14 @@ public class MarkConditionDescriber {
             return Component.translatable("cobblemonmarks.tooltip.condition.battle_turns",
                     cyan(String.valueOf(tbc.getRequiredCount()))
             ).withStyle(s -> s.withColor(labelColor));
+        if (c instanceof FormKillCondition fkc) {
+            MutableComponent forms = fkc.getRequiredForms().stream()
+                    .map(f -> (MutableComponent) Component.literal(f).withStyle(s -> s.withColor(CYAN)))
+                    .reduce((a, b) -> a.append(Component.literal(", ").withStyle(s -> s.withColor(labelColor))).append(b))
+                    .orElse(Component.literal("?"));
+            return Component.translatable("cobblemonmarks.tooltip.condition.form", forms)
+                    .withStyle(s -> s.withColor(labelColor));
+        }
         return Component.literal(c.getClass().getSimpleName()).withStyle(s -> s.withColor(labelColor));
     }
 

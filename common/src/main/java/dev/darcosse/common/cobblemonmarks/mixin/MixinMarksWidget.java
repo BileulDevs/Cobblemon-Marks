@@ -9,9 +9,11 @@ import dev.darcosse.common.cobblemonmarks.client.MarkConditionDescriber;
 import dev.darcosse.common.cobblemonmarks.config.MarksCondition;
 import dev.darcosse.common.cobblemonmarks.config.MarksConfig;
 import dev.darcosse.common.cobblemonmarks.util.IScrollSlotRow;
+import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -86,6 +88,10 @@ public abstract class MixinMarksWidget {
 
         if (!marksScrollList.isMouseOver(mouseX, mouseY)) return;
 
+        // Si une mark obtenue est hovérée → Cobblemon gère déjà son tooltip, on ne fait rien
+        if (hoveredMark != null) return;
+
+        // Chercher un slot null hovered
         int globalNullIndex = 0;
 
         for (int i = 0; i < marksScrollList.children().size(); i++) {
@@ -108,9 +114,18 @@ public abstract class MixinMarksWidget {
                     List<Component> tooltip = new ArrayList<>();
                     if (mark != null) {
                         String markName = mark.getSerializedName().replace("cobblemon:", "");
-                        tooltip.add(Component.literal("§8§l🔒 §r").append(
-                                Component.translatable("cobblemon.mark." + markName).withStyle(s -> s.withColor(0xAAAAAA))
-                        ));
+                        // Nom de la mark avec sa propre couleur
+                        MutableComponent markNameComponent = Component.translatable("cobblemon.mark." + markName);
+                        tooltip.add(Component.literal("§8§l🔒 §r").append(markNameComponent));
+
+                        // Titre : getTitle retourne "NomMark titre", on veut juste le titre
+                        // On passe un Component vide pour éviter la répétition du nom
+                        Component title = mark.getTitle(Component.literal(""));
+                        if (title != null) {
+                            int color = (int) Long.parseLong(mark.getTitleColour(), 16);
+                            tooltip.add(Component.literal(title.getString().trim())
+                                    .withStyle(s -> s.withItalic(true).withColor(color)));
+                        }
                     }
                     tooltip.addAll(MarkConditionDescriber.describe(markCondition, pokemon));
                     context.renderComponentTooltip(Minecraft.getInstance().font, tooltip, mouseX, mouseY);
@@ -120,22 +135,6 @@ public abstract class MixinMarksWidget {
 
             for (Object m : rowMarks) {
                 if (m == null) globalNullIndex++;
-            }
-        }
-
-        // Tooltip pour marks obtenues avec conditions dans notre config
-        if (hoveredMark != null) {
-            for (MarksCondition markCondition : MarksConfig.CONDITIONS) {
-                String rawPath = markCondition.getMarkIdentifier().replace("cobblemon:", "");
-                ResourceLocation markId = ResourceLocation.fromNamespaceAndPath("cobblemon", rawPath);
-                Mark mark = Marks.getByIdentifier(markId);
-                if (mark != null && mark.equals(hoveredMark)) {
-                    List<Component> tooltip = new ArrayList<>();
-                    tooltip.add(Component.literal(" "));
-                    tooltip.addAll(MarkConditionDescriber.describe(markCondition, pokemon));
-                    context.renderComponentTooltip(Minecraft.getInstance().font, tooltip, mouseX, mouseY);
-                    return;
-                }
             }
         }
     }

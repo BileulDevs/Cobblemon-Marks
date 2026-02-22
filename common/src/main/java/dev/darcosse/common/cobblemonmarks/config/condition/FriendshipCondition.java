@@ -14,7 +14,6 @@ public class FriendshipCondition implements MarkCondition {
     @Override
     public boolean isMet(Pokemon triggerPokemon, Pokemon targetPokemon, ServerPlayer player) {
         int friendship = triggerPokemon.getFriendship();
-        CobblemonMarksMod.LOGGER.info("Friendship de {} : {}", triggerPokemon.getSpecies().getName(), friendship);
         return friendship >= requiredFriendship;
     }
 
