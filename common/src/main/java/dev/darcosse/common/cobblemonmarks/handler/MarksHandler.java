@@ -362,4 +362,37 @@ public class MarksHandler {
         }
         return true;
     }
+
+    /**
+     * Synchronizes Mark progress NBT data to the client on player join.
+     * Should be called from the platform-specific login event.
+     */
+    public static void syncProgressOnJoin(ServerPlayer player) {
+        var party = Cobblemon.INSTANCE.getStorage().getParty(player);
+
+        for (Pokemon pokemon : party) {
+            if (pokemon == null) continue;
+
+            Map<String, Integer> progressMap = new HashMap<>();
+            var tag = pokemon.getPersistentData();
+
+            for (MarksCondition mc : MarksConfig.CONDITIONS) {
+                MarkCondition kc = mc.getConditions().getKillCondition();
+                if (kc != null && kc.getNbtKey() != null) {
+                    int val = tag.getInt(kc.getNbtKey());
+                    if (val > 0) progressMap.put(kc.getNbtKey(), val);
+                }
+                for (MarkCondition c : mc.getConditions().getRequired()) {
+                    if (c.getNbtKey() != null) {
+                        int val = tag.getInt(c.getNbtKey());
+                        if (val > 0) progressMap.put(c.getNbtKey(), val);
+                    }
+                }
+            }
+
+            if (!progressMap.isEmpty()) {
+                PacketSender.sendToPlayer(player, new SyncMarkProgressPayload(pokemon.getUuid(), progressMap));
+            }
+        }
+    }
 }
