@@ -64,6 +64,8 @@ config/cobblemonmarks/conditions.json
 
 You can edit it freely. On next launch, the mod will load your custom configuration. If a `markIdentifier` appears more than once, only the first entry is kept.
 
+You can see every Marks available [here](https://gitlab.com/cable-mc/cobblemon/-/tree/main/common/src/main/resources/data/cobblemon/marks?ref_type=heads)
+
 ### Example
 
 ```json

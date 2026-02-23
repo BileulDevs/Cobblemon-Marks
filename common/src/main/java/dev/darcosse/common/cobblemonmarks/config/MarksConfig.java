@@ -35,6 +35,7 @@ public class MarksConfig {
     private static final String RARE             = COBBLEMON + "mark_rare";
     private static final String PARTNER          = COBBLEMON + "mark_partner";
     private static final String RIBBON_TRAINING  = COBBLEMON + "ribbon_training";
+    private static final String RIBBON_EARTH     = COBBLEMON + "ribbon_event_earth";
 
     // === Marks de personnalité ===
     private static final String ABSENT_MINDED = COBBLEMON + "mark_personality_absent-minded";
@@ -337,6 +338,12 @@ public class MarksConfig {
         list.add(new MarksCondition(PUMPED_UP,
                 new Conditions(
                         new StreakCondition(50, NBT_PREFIX + "pumpedup_streak")
+                )
+        ));
+
+        list.add(new MarksCondition(RIBBON_EARTH,
+                new Conditions(
+                        new StreakCondition(100, NBT_PREFIX + "ribbon_earth_streak")
                 )
         ));
 
