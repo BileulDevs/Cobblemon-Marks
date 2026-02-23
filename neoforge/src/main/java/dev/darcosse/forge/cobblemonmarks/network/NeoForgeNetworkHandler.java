@@ -1,7 +1,9 @@
 package dev.darcosse.forge.cobblemonmarks.network;
 
 import dev.darcosse.common.cobblemonmarks.client.MarkProgressCache;
+import dev.darcosse.common.cobblemonmarks.config.MarksConfig;
 import dev.darcosse.common.cobblemonmarks.network.SyncMarkProgressPayload;
+import dev.darcosse.common.cobblemonmarks.network.SyncMarksConfigPayload;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
@@ -25,6 +27,17 @@ public class NeoForgeNetworkHandler {
                 (payload, context) -> context.enqueueWork(() ->
                         // Executes on the main client thread to update the cache safely
                         MarkProgressCache.update(payload.pokemonUUID, payload.progressMap)
+                )
+        );
+
+        registrar.playToClient(
+                SyncMarksConfigPayload.TYPE,
+                StreamCodec.of(
+                        (buf, payload) -> SyncMarksConfigPayload.encode(payload, (FriendlyByteBuf) buf),
+                        buf -> SyncMarksConfigPayload.decode((FriendlyByteBuf) buf)
+                ),
+                (payload, context) -> context.enqueueWork(() ->
+                        MarksConfig.CONDITIONS = payload.conditions
                 )
         );
     }

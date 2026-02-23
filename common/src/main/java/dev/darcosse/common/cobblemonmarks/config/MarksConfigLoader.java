@@ -105,4 +105,28 @@ public class MarksConfigLoader {
             CobblemonMarksMod.LOGGER.error("Error writing conditions.json", e);
         }
     }
+
+    /**
+     * Serializes a list of MarkConditions into a JSON string.
+     * Used for network transmission and file persistence.
+     */
+    public static String toJson(List<MarksCondition> conditions) {
+        // Defines the generic List type for GSON to ensure correct object mapping
+        Type listType = new TypeToken<List<MarksCondition>>(){}.getType();
+
+        // Converts the Java collection into a formatted UTF-8 string
+        return GSON.toJson(conditions, listType);
+    }
+
+    /**
+     * Deserializes a JSON string back into a list of MarkConditions.
+     * Used when receiving network packets or reading config files.
+     */
+    public static List<MarksCondition> fromJson(String json) {
+        // Defines the target generic List type for the deserialization process
+        Type listType = new TypeToken<List<MarksCondition>>(){}.getType();
+
+        // Reconstructs the Java objects from the provided JSON string
+        return GSON.fromJson(json, listType);
+    }
 }
