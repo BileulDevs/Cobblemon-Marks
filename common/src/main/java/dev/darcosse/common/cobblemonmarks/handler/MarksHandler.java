@@ -69,8 +69,9 @@ public class MarksHandler {
 
         for (BattleActor actor : battle.getActors()) {
             if (!(actor instanceof PlayerBattleActor playerActor)) continue;
-            for (BattlePokemon bp : playerActor.getPokemonList()) {
-                bp.getOriginalPokemon().getPersistentData().putBoolean(IN_PVW_BATTLE_KEY, true);
+            BattlePokemon active = playerActor.getActivePokemon().getFirst().getBattlePokemon();
+            if (active != null) {
+                active.getOriginalPokemon().getPersistentData().putBoolean(IN_PVW_BATTLE_KEY, true);
             }
         }
     }
