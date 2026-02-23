@@ -7,7 +7,10 @@ import com.cobblemon.mod.common.api.events.CobblemonEvents;
 import com.cobblemon.mod.common.api.events.battles.BattleFaintedEvent;
 import com.cobblemon.mod.common.api.events.pokemon.FriendshipUpdatedEvent;
 import com.cobblemon.mod.common.api.events.pokemon.PokemonCapturedEvent;
+import com.cobblemon.mod.common.api.events.pokemon.PokemonRecallEvent;
+import com.cobblemon.mod.common.api.events.pokemon.PokemonSentEvent;
 import com.cobblemon.mod.common.api.mark.Marks;
+import com.cobblemon.mod.common.battles.BattleRegistry;
 import com.cobblemon.mod.common.battles.actor.PlayerBattleActor;
 import com.cobblemon.mod.common.battles.pokemon.BattlePokemon;
 import com.cobblemon.mod.common.pokemon.Pokemon;
@@ -51,14 +54,39 @@ public class MarksHandler {
         CobblemonEvents.BATTLE_VICTORY.subscribe(event -> handleBattleVictory(event.getBattle()));
         CobblemonEvents.BATTLE_FAINTED.subscribe(MarksHandler::handleFainted);
 
+        CobblemonEvents.POKEMON_SENT_POST.subscribe(MarksHandler::handleSentOut);
+        CobblemonEvents.POKEMON_RECALL_POST.subscribe(MarksHandler::handleRecall);
+
         // Pokémon state events
         CobblemonEvents.POKEMON_CAPTURED.subscribe(MarksHandler::handleCapture);
         CobblemonEvents.FRIENDSHIP_UPDATED.subscribe(MarksHandler::handleFriendshipUpdated);
     }
 
-    // -------------------------------------------------------------------------
-    // BATTLE EVENT HANDLING
-    // -------------------------------------------------------------------------
+    /**
+     * Updates the active Pokémon flag when a Pokémon is sent out during a PvW battle.
+     * Transfers IN_PVW_BATTLE_KEY to the newly active Pokémon.
+     */
+    private static void handleSentOut(PokemonSentEvent.Post event) {
+        Pokemon pokemon = event.getPokemon();
+        if (!(pokemon.getOwnerEntity() instanceof ServerPlayer player)) return;
+
+        PokemonBattle battle = BattleRegistry.getBattleByParticipatingPlayer(player);
+        if (battle == null || !battle.isPvW()) return;
+
+        var party = Cobblemon.INSTANCE.getStorage().getParty(player);
+        for (Pokemon p : party) {
+            if (p != null) p.getPersistentData().remove(IN_PVW_BATTLE_KEY);
+        }
+
+        pokemon.getPersistentData().putBoolean(IN_PVW_BATTLE_KEY, true);
+    }
+
+    /**
+     * Removes the active Pokémon flag when a Pokémon is recalled during a PvW battle.
+     */
+    private static void handleRecall(PokemonRecallEvent.Post event) {
+        event.getPokemon().getPersistentData().remove(IN_PVW_BATTLE_KEY);
+    }
 
     /**
      * Flags player Pokémon when entering a PvW (Player vs Wild) battle.
@@ -69,9 +97,8 @@ public class MarksHandler {
 
         for (BattleActor actor : battle.getActors()) {
             if (!(actor instanceof PlayerBattleActor playerActor)) continue;
-            for (BattlePokemon bp : playerActor.getPokemonList()) {
-                bp.getOriginalPokemon().getPersistentData().putBoolean(IN_PVW_BATTLE_KEY, true);
-            }
+            playerActor.getPokemonList().getFirst().getOriginalPokemon()
+                    .getPersistentData().putBoolean(IN_PVW_BATTLE_KEY, true);
         }
     }
 
@@ -170,10 +197,6 @@ public class MarksHandler {
         }
     }
 
-    // -------------------------------------------------------------------------
-    // CAPTURE AND STATE HANDLING
-    // -------------------------------------------------------------------------
-
     /**
      * Handles Mark progression triggered by a successful capture.
      */
@@ -245,10 +268,6 @@ public class MarksHandler {
         }
     }
 
-    // -------------------------------------------------------------------------
-    // PROCESSING AND UTILITIES
-    // -------------------------------------------------------------------------
-
     /**
      * Evaluates if a victory scenario meets all conditions for a specific Mark.
      */
@@ -309,23 +328,27 @@ public class MarksHandler {
      * Final step: awards the Mark to the Pokémon and notifies the player.
      */
     private static void awardMark(Pokemon pokemon, MarksCondition markCondition, ServerPlayer player) {
-        String rawPath = markCondition.getMarkIdentifier().replace("cobblemon:", "");
-        ResourceLocation markId = ResourceLocation.fromNamespaceAndPath("cobblemon", rawPath);
-        var mark = Marks.getByIdentifier(markId);
+        try {
+            String rawPath = markCondition.getMarkIdentifier().replace("cobblemon:", "");
+            ResourceLocation markId = ResourceLocation.fromNamespaceAndPath("cobblemon", rawPath);
+            var mark = Marks.getByIdentifier(markId);
 
-        if (mark == null) {
-            CobblemonMarksMod.LOGGER.warn("Mark not found: {}", markCondition.getMarkIdentifier());
-            return;
+            if (mark == null) {
+                CobblemonMarksMod.LOGGER.warn("Mark not found: {}", markCondition.getMarkIdentifier());
+                return;
+            }
+            if (pokemon.getMarks().contains(mark)) return;
+
+            pokemon.exchangeMark(mark, true);
+
+            String markName = mark.getSerializedName().replace("cobblemon:", "");
+            player.sendSystemMessage(Component.translatable("cobblemonmarks.message.mark_obtained",
+                    pokemonName(pokemon),
+                    Component.translatable("cobblemon.mark." + markName).withStyle(s -> s.withColor(0x55FF55))
+            ).withStyle(s -> s.withColor(0x55FF55)));
+        } catch (Exception e) {
+            CobblemonMarksMod.LOGGER.warn("Invalid markIdentifier '{}': {}", markCondition.getMarkIdentifier(), e.getMessage());
         }
-        if (pokemon.getMarks().contains(mark)) return;
-
-        pokemon.exchangeMark(mark, true);
-
-        String markName = mark.getSerializedName().replace("cobblemon:", "");
-        player.sendSystemMessage(Component.translatable("cobblemonmarks.message.mark_obtained",
-                pokemonName(pokemon),
-                Component.translatable("cobblemon.mark." + markName).withStyle(s -> s.withColor(0x55FF55))
-        ).withStyle(s -> s.withColor(0x55FF55)));
     }
 
     /**
