@@ -1,8 +1,10 @@
 package dev.darcosse.fabric.cobblemonmarks;
 
 import dev.darcosse.common.cobblemonmarks.CobblemonMarksMod;
+import dev.darcosse.common.cobblemonmarks.handler.MarksHandler;
 import dev.darcosse.common.cobblemonmarks.network.PacketSender;
 import dev.darcosse.fabric.cobblemonmarks.network.FabricNetworkHandler;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.loader.api.FabricLoader;
@@ -19,5 +21,9 @@ public class CobblemonMarksFabricMod implements ModInitializer {
         CobblemonMarksMod.init();
         FabricNetworkHandler.registerServer();
         PacketSender.setImpl(ServerPlayNetworking::send);
+
+        ServerPlayConnectionEvents.JOIN.register((handler, sender, server) ->
+                MarksHandler.syncProgressOnJoin(handler.getPlayer())
+        );
     }
 }

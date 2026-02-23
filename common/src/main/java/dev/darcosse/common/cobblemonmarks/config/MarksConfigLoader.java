@@ -66,8 +66,9 @@ public class MarksConfigLoader {
              * in the JSON, the mod only processes it once to prevent event conflicts.
              */
             List<MarksCondition> deduplicated = new ArrayList<>();
-            Set<String> seen = new LinkedHashSet<>(); // LinkedHashSet preserves the file's order
+            Set<String> seen = new LinkedHashSet<>();
             for (MarksCondition mc : loaded) {
+                if (!isValid(mc)) continue;
                 if (seen.add(mc.getMarkIdentifier())) {
                     deduplicated.add(mc);
                 } else {
@@ -128,5 +129,34 @@ public class MarksConfigLoader {
 
         // Reconstructs the Java objects from the provided JSON string
         return GSON.fromJson(json, listType);
+    }
+
+    /**
+     * Validates a MarksCondition entry before registration.
+     * Filters out null, malformed, or incorrectly namespaced entries to prevent runtime crashes.
+     */
+    private static boolean isValid(MarksCondition mc) {
+        if (mc == null) {
+            CobblemonMarksMod.LOGGER.warn("Skipping null MarksCondition entry");
+            return false;
+        }
+        if (mc.getMarkIdentifier() == null || mc.getMarkIdentifier().isBlank()) {
+            CobblemonMarksMod.LOGGER.warn("Skipping entry with null/empty markIdentifier");
+            return false;
+        }
+        if (!mc.getMarkIdentifier().startsWith("cobblemon:")) {
+            CobblemonMarksMod.LOGGER.warn("Skipping '{}': markIdentifier must start with 'cobblemon:'", mc.getMarkIdentifier());
+            return false;
+        }
+        if (mc.getConditions() == null) {
+            CobblemonMarksMod.LOGGER.warn("Skipping '{}': conditions is null", mc.getMarkIdentifier());
+            return false;
+        }
+        MarkCondition kc = mc.getConditions().getKillCondition();
+        if (kc != null && (kc.getNbtKey() == null || kc.getNbtKey().isBlank())) {
+            CobblemonMarksMod.LOGGER.warn("Skipping '{}': killCondition has null/empty nbtKey", mc.getMarkIdentifier());
+            return false;
+        }
+        return true;
     }
 }

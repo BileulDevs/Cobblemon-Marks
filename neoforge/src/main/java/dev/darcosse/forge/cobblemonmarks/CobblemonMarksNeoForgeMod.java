@@ -2,6 +2,7 @@ package dev.darcosse.forge.cobblemonmarks;
 
 import dev.darcosse.common.cobblemonmarks.CobblemonMarksMod;
 import dev.darcosse.common.cobblemonmarks.config.MarksConfig;
+import dev.darcosse.common.cobblemonmarks.handler.MarksHandler;
 import dev.darcosse.common.cobblemonmarks.network.PacketSender;
 import dev.darcosse.common.cobblemonmarks.network.SyncMarksConfigPayload;
 import dev.darcosse.forge.cobblemonmarks.network.NeoForgeNetworkHandler;
@@ -37,6 +38,7 @@ public class CobblemonMarksNeoForgeMod {
     private void onPlayerJoin(PlayerEvent.PlayerLoggedInEvent event) {
         if (event.getEntity() instanceof ServerPlayer player) {
             PacketSender.sendToPlayer(player, new SyncMarksConfigPayload(MarksConfig.CONDITIONS));
+            MarksHandler.syncProgressOnJoin(player);
         }
     }
 }
