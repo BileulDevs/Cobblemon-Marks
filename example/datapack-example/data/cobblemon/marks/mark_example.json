@@ -1,0 +1,9 @@
+{
+  "name": "cobblemon.mark.mark_example",
+  "title": "cobblemon.mark.mark_example.title",
+  "titleColor": "E040FB",
+  "description": "cobblemon.mark.mark_example.desc",
+  "texture": "cobblemon:textures/gui/mark/mark_example.png",
+  "chance": 0.0,
+  "indexNumber": 1000
+}
