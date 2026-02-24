@@ -66,6 +66,8 @@ You can edit it freely. On next launch, the mod will load your custom configurat
 
 You can see every Marks available [here](https://gitlab.com/cable-mc/cobblemon/-/tree/main/common/src/main/resources/data/cobblemon/marks?ref_type=heads)
 
+You can also create your own marks by following this [tuto](https://github.com/BileulDevs/Cobblemon-Marks/tree/main/example)
+
 ### Example
 
 ```json
