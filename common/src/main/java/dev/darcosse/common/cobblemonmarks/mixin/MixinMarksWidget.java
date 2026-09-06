@@ -32,7 +32,7 @@ import java.util.List;
  * @version 1.1
  * @since 2026
  */
-@Mixin(value = MarksWidget.class)
+@Mixin(value = MarksWidget.class, remap = false)
 public abstract class MixinMarksWidget {
 
     @Shadow private Mark hoveredMark;
