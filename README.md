@@ -10,6 +10,7 @@ By default, Marks are handed out at random when a Pokémon spawns. This addon lo
 
 Locked marks show up greyed out in the Pokémon's mark tab, with a tooltip listing every condition and your live progress toward it. Nothing to open, nothing to refresh — the counter updates as you play.
 
+[![CurseForge](https://img.shields.io/curseforge/dt/1469388?logo=curseforge&label=Downloads&color=f16436)](https://www.curseforge.com/minecraft/mc-mods/cobblemon-marks-quests)
 [![Minecraft](https://img.shields.io/badge/Minecraft-1.21.1-green?logo=minecraft)](https://www.minecraft.net)
 [![Fabric](https://img.shields.io/badge/Fabric-supported-dbb37d?logo=fabric)](https://fabricmc.net)
 [![NeoForge](https://img.shields.io/badge/NeoForge-supported-e04e14)](https://neoforged.net)
