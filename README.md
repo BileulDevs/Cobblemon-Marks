@@ -1,74 +1,82 @@
-# ⚔ CobblemonMarks
+# Cobblemon Marks
 
-> A Cobblemon addon that lets you farm Marks by completing configurable objectives.
-
----
-
-## 📖 Overview
-
-CobblemonMarks adds a **mark farming system** to Cobblemon. Each mark can be configured with conditions that the player must meet to unlock it. Locked marks are displayed in the Pokémon's mark tab as **grayed-out icons** with a tooltip showing the objectives and current progress — updated in real time.
+> A Cobblemon addon that turns Marks into goals you farm, instead of luck you wait for.
 
 ---
 
-## ✨ Features
+## Overview
 
-- 🏷️ **Lock/unlock system** — locked marks appear grayed out in the summary screen
-- 📊 **Real-time progress** — objectives sync from server to client instantly
-- 🎯 **Fully configurable** — define conditions for any mark via JSON
-- 🔒 **Duplicate protection** — if the same mark appears twice in the config, only the first entry is kept
-- 🌍 **Multilingual** — supported languages: `en_us`, `fr_fr`, `de_de`, `es_es`, `pt_br`, `ja_jp`, `zh_cn`
-- ⚙️ **Multi-loader** — supports both **Fabric** and **NeoForge** (via Architectury)
+By default, Marks are handed out at random when a Pokémon spawns. This addon locks them behind objectives you define: defeat a hundred Pokémon at lunchtime, catch three shinies, win fifty battles in a row.
+
+Locked marks show up greyed out in the Pokémon's mark tab, with a tooltip listing every condition and your live progress toward it. Nothing to open, nothing to refresh — the counter updates as you play.
+
+[![Minecraft](https://img.shields.io/badge/Minecraft-1.21.1-green?logo=minecraft)](https://www.minecraft.net)
+[![Fabric](https://img.shields.io/badge/Fabric-supported-dbb37d?logo=fabric)](https://fabricmc.net)
+[![NeoForge](https://img.shields.io/badge/NeoForge-supported-e04e14)](https://neoforged.net)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 ---
 
-## 🧩 Condition Types
+## Features
 
-### Main condition (`condition`)
+- **Lock/unlock system** — locked marks appear greyed out in the summary screen
+- **Live progress** — counters sync server to client the moment they change, no need to reopen anything
+- **Fully configurable** — any mark, any combination of conditions, defined in JSON
+- **Duplicate protection** — if a mark appears twice in the config, only the first entry is kept
+- **Multi-loader** — Fabric and NeoForge from one codebase, via Architectury
+- **Seven languages** — English, French, German, Spanish, Portuguese (BR), Japanese, Simplified Chinese
 
-The `condition` field defines the primary objective — it tracks progress and determines when the mark is awarded.
+---
 
-| Type | Description |
-|------|-------------|
-| `KILL` | Defeat a number of Pokémon (with optional type/species filters) |
-| `FISHING_KILL` | Defeat Pokémon caught by fishing |
-| `FORM_KILL` | Defeat Pokémon of a specific form (e.g. `alolan`, `mega`) |
-| `STREAK` | Win battles in a row without fainting |
-| `CATCH` | Catch Pokémon in battle |
-| `DEATH` | Faint a number of times |
+## Conditions
 
-### Additional conditions (`required` / `excluded`)
+A mark has one **main condition**, which counts progress and decides when the mark is awarded, plus any number of **filters** that decide whether a given action counts at all.
 
-These conditions filter when progress can be made. `required` conditions must all be met, `excluded` conditions must not be met.
+### Main conditions
 
-| Type | Description |
-|------|-------------|
-| `WEATHER` | Specific weather (`CLEAR`, `RAIN`, `THUNDER`, `SNOW`) |
-| `TIME` | In-game time range (in ticks, 0–24000) |
-| `TIME_OF_BATTLE` | Win within a number of turns |
-| `BIOME` | Specific biome or biome tag |
+| Type | Counts |
+|---|---|
+| `KILL` | Pokémon defeated, optionally filtered by type or species |
+| `FISHING_KILL` | Pokémon defeated after being caught by fishing |
+| `FORM_KILL` | Pokémon of a specific form defeated (`alolan`, `mega`, …) |
+| `CATCH` | Pokémon caught in battle |
+| `STREAK` | Battles won in a row without fainting |
+| `DEATH` | Times your Pokémon has fainted |
+
+### Filters
+
+`required` conditions must all hold. `excluded` conditions must not. Either way, progress only moves when the filters agree.
+
+| Type | Checks |
+|---|---|
+| `WEATHER` | `CLEAR`, `RAIN`, `THUNDER`, `SNOW` |
+| `TIME` | In-game time range, in ticks (0–24000) |
+| `TIME_OF_BATTLE` | Battle won within a number of turns |
+| `BIOME` | A biome or a biome tag |
+| `DIMENSION` | A specific dimension |
 | `LEVEL` | Opponent level range |
-| `SIZE` | Pokémon size (`XXXS` → `XXXL`) |
-| `DIMENSION` | Specific dimension |
+| `SIZE` | Pokémon size, `XXXS` through `XXXL` |
 | `STATUS` | Status condition on your Pokémon |
-| `FRIENDSHIP` | Minimum friendship level |
-| `SHINY` | Target must be shiny (used with `CATCH`) |
+| `FRIENDSHIP` | Minimum friendship |
+| `SHINY` | Target is shiny — pairs with `CATCH` |
 
 ---
 
-## 🗂️ Configuration
+## Configuration
 
-A default `conditions.json` is generated on first launch at:
+A default `conditions.json` is written on first launch to:
+
 ```
 config/cobblemonmarks/conditions.json
 ```
 
-You can edit it freely. On next launch, the mod will load your custom configuration. If a `markIdentifier` appears more than once, only the first entry is kept.
+Edit it freely; it's reloaded on the next launch. If the same `markIdentifier` appears more than once, only the first entry survives.
 
-You can see every Marks available [here](https://gitlab.com/cable-mc/cobblemon/-/tree/main/common/src/main/resources/data/cobblemon/marks?ref_type=heads)
-
-You can also create your own marks by following this [tuto](https://github.com/BileulDevs/Cobblemon-Marks/tree/main/example)
+The full list of vanilla Cobblemon marks is [here](https://gitlab.com/cable-mc/cobblemon/-/tree/main/common/src/main/resources/data/cobblemon/marks?ref_type=heads), and you can add marks of your own by following [this guide](https://github.com/BileulDevs/Cobblemon-Marks/tree/main/example).
 
 ### Example
+
+Three marks: a hundred kills but only around midday, three shiny catches, and a fifty-battle streak.
 
 ```json
 [
@@ -83,11 +91,7 @@ You can also create your own marks by following this [tuto](https://github.com/B
         "nbtKey": "markfarm_lunchtime_kills"
       },
       "required": [
-        {
-          "type": "TIME",
-          "minTime": 6000,
-          "maxTime": 11833
-        }
+        { "type": "TIME", "minTime": 6000, "maxTime": 11833 }
       ],
       "excluded": []
     }
@@ -101,9 +105,7 @@ You can also create your own marks by following this [tuto](https://github.com/B
         "nbtKey": "markfarm_rare_shiny_captures"
       },
       "required": [
-        {
-          "type": "SHINY"
-        }
+        { "type": "SHINY" }
       ],
       "excluded": []
     }
@@ -123,72 +125,57 @@ You can also create your own marks by following this [tuto](https://github.com/B
 ]
 ```
 
----
-
-## 🖥️ In-game UI
-
-When hovering over a **locked mark** in the Pokémon summary screen:
-- 🔒 The mark name and title are displayed
-- 📊 Current progress is shown (e.g. `Progress: 12/100`)
-- 📋 All conditions are listed with their respective icons and colors
-
-When hovering over an **already obtained mark**:
-- The mark title is displayed in italic with its own color
-- Conditions and progress are still shown for reference
+`nbtKey` is where the counter is stored on the Pokémon. Give every mark its own, or two marks will share progress.
 
 ---
 
-## 🚀 Installation
+## In game
 
-1. Install [Cobblemon](https://modrinth.com/mod/cobblemon)
-2. Download CobblemonMarks for your platform (Fabric or NeoForge)
-3. Drop the jar into your `mods/` folder
-4. Launch the game — a default config will be generated on first run
+Hover a **locked mark** in the summary screen and you get its name, your current progress (`12/100`), and every condition listed with its own icon and colour.
+
+Hover one you **already own** and the title shows in italics with its mark colour — conditions and progress stay visible, so you can still see what earned it.
+
+---
+
+## Installation
+
+1. Install [Cobblemon](https://modrinth.com/mod/cobblemon) 1.8.0 for Minecraft 1.21.1.
+2. Install the Kotlin bridge for your loader — Fabric Language Kotlin on Fabric, Kotlin for Forge on NeoForge. Cobblemon needs it.
+3. Drop the Cobblemon Marks jar for your loader into `mods/`.
+4. Launch — the default config is generated on first run.
 
 ### Requirements
 
-| Dependency | Version |
-|------------|---------|
-| Minecraft | 1.21.1 |
-| Cobblemon | ≥ 1.7.1, < 1.8.0 |
-| Fabric API *(Fabric only)* | Latest for 1.21.1 |
+| | Fabric | NeoForge |
+|---|---|---|
+| Minecraft | 1.21.1 | 1.21.1 |
+| Cobblemon | 1.8.0+ | 1.8.0+ |
+| Also required | Fabric API, Fabric Language Kotlin | Kotlin for Forge |
+
+### Client or server?
+
+On a multiplayer server, install it on **both**. The server owns the counters and the config; the client needs it to draw the locked state and the tooltips. The config is synced from server to client, so players automatically see whatever objectives that server defines.
 
 ---
 
-## 🌐 Supported Languages
+## For developers
 
-| Code | Language |
-|------|----------|
-| `en_us` | English |
-| `fr_fr` | Français |
-| `de_de` | Deutsch |
-| `es_es` | Español |
-| `pt_br` | Português (Brasil) |
-| `ja_jp` | 日本語 |
-| `zh_cn` | 中文（简体）|
-
----
-
-## 🛠️ For Developers
-
-The mod is built with **Architectury** and targets both Fabric and NeoForge from a single common codebase.
+Architectury multiloader layout, one shared codebase:
 
 ```
-common/   → shared logic (conditions, handler, mixin, config)
+common/   → conditions, handler, mixins, config
 fabric/   → Fabric entrypoints and network handler
 neoforge/ → NeoForge entrypoints and network handler
 ```
 
-Progress synchronization uses a custom `S2C` packet (`SyncMarkProgressPayload`) that sends the Pokémon's full progress map to the client whenever a counter is incremented, ensuring the tooltip always reflects the latest state without needing to reopen the summary screen.
+Progress syncing uses a custom S2C packet, `SyncMarkProgressPayload`, which pushes the Pokémon's whole progress map whenever a counter moves. That's what keeps the tooltip current without reopening the screen. A second packet, `SyncMarksConfigPayload`, hands the server's condition set to the client on join.
+
+Adding a condition type means an entry in `ConditionType`, a class in `config/condition/`, a branch in `MarkConditionAdapter`, and a line in `MarkConditionDescriber` for the tooltip.
 
 ---
 
-## 📄 License
+## License
 
-MIT License — see [LICENSE](LICENSE) for details.
+MIT — see [LICENSE](LICENSE). Use it in your modpacks freely.
 
----
-
-## 👤 Author
-
-Made by **Darcosse**
+Made by **Darcosse**. Bug reports and suggestions go to the [issue tracker](https://github.com/BileulDevs/Cobblemon-Marks/issues).
