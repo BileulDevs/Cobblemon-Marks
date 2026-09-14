@@ -22,7 +22,7 @@ import java.util.List;
  * @version 1.1
  * @since 2026
  */
-@Mixin(value = MarksScrollingWidget.ScrollSlotRow.class, remap = false)
+@Mixin(value = MarksScrollingWidget.ScrollSlotRow.class)
 public abstract class MixinScrollSlotRow implements IScrollSlotRow {
 
     @Shadow public List markList;
